@@ -319,10 +319,19 @@ ctrlEnd.addEventListener('click', () => {
 });
 
 // Timeline Scrubbing & Updating
-revealVideo.addEventListener('loadedmetadata', () => {
-  ctrlTimeline.max = revealVideo.duration;
-  timeTotal.textContent = formatTime(revealVideo.duration);
-});
+function updateMetadata() {
+  if (revealVideo.duration) {
+    ctrlTimeline.max = revealVideo.duration;
+    timeTotal.textContent = formatTime(revealVideo.duration);
+  }
+}
+
+// Check if metadata is already loaded
+if (revealVideo.readyState >= 1) {
+  updateMetadata();
+} else {
+  revealVideo.addEventListener('loadedmetadata', updateMetadata);
+}
 
 revealVideo.addEventListener('timeupdate', () => {
   // Only update timeline if user isn't currently dragging it
