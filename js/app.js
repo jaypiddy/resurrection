@@ -34,6 +34,10 @@ const videoContainer = document.getElementById('video-container');
 const revealVideo = document.getElementById('reveal-video');
 const closeVideoBtn = document.getElementById('close-video');
 
+const footerBar = document.getElementById('footer-bar');
+const currentYearSpan = document.getElementById('current-year');
+if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+
 const bgAudio = document.getElementById('bg-audio');
 const muteBtn = document.getElementById('mute-btn');
 const iconUnmuted = document.getElementById('icon-unmuted');
@@ -181,6 +185,8 @@ function setupAnimations() {
         if (isAudioPlaying && !bgAudio.paused) bgAudio.pause();
         videoSection.style.opacity = '1';
         videoSection.style.pointerEvents = 'auto';
+        footerBar.style.opacity = '0';
+        footerBar.style.pointerEvents = 'none';
         
         // Unpause video if we scrolled back into view
         if (videoContainer.classList.contains('active') && videoWasPlayingOnScroll) {
@@ -198,6 +204,8 @@ function setupAnimations() {
 
         videoSection.style.opacity = '0';
         videoSection.style.pointerEvents = 'none';
+        footerBar.style.opacity = '1';
+        footerBar.style.pointerEvents = 'none'; // Will let CSS handle the pointer-events auto for children
       }
     }
   });

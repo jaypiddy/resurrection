@@ -134,11 +134,47 @@ body {
   max-width: 90vw;
 }
 
-/* Mute Button */
-.mute-btn {
+/* Footer Bar */
+.footer-bar {
   position: fixed;
   bottom: 30px;
+  left: 30px;
   right: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  pointer-events: none; /* Let clicks pass through empty space */
+  transition: opacity 0.5s ease;
+}
+
+.footer-text {
+  font-family: var(--font-secondary);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: auto;
+  letter-spacing: 0.05em;
+  opacity: 1;
+}
+
+.footer-text a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.footer-text a:hover {
+  opacity: 0.7;
+}
+
+.vertical-bar {
+  margin: 0 10px;
+  opacity: 0.3;
+}
+
+/* Mute Button */
+.mute-btn {
+  position: relative;
   width: 50px;
   height: 50px;
   border: 1px solid var(--accent-color);
@@ -146,7 +182,7 @@ body {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
   cursor: pointer;
-  z-index: 100;
+  pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;

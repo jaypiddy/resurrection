@@ -19,19 +19,28 @@
     <source src="Public/A_winter_rainstorm_w_%232-1777060513903.wav" type="audio/wav">
   </audio>
 
-  <!-- Mute Button -->
-  <button id="mute-btn" class="mute-btn" aria-label="Toggle Mute">
-    <!-- Unmuted Icon -->
-    <svg id="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" style="display: none;">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-    </svg>
-    <!-- Muted Icon -->
-    <svg id="icon-muted" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-      <line x1="23" y1="1" x2="1" y2="23"></line>
-    </svg>
-  </button>
+  <!-- Footer Bar (Links + Mute Button) -->
+  <div id="footer-bar" class="footer-bar">
+    <div class="footer-text">
+      &copy; <span id="current-year"></span> <a href="https://www.powershifter.com/studio" target="_blank" rel="noopener noreferrer">Power // Shifter Studios</a>
+      <span class="vertical-bar">|</span>
+      Made by the good folks at <a href="https://www.powershifter.com" target="_blank" rel="noopener noreferrer">Power Shifter Digital</a>
+    </div>
+
+    <!-- Mute Button -->
+    <button id="mute-btn" class="mute-btn" aria-label="Toggle Mute">
+      <!-- Unmuted Icon -->
+      <svg id="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" style="display: none;">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      </svg>
+      <!-- Muted Icon -->
+      <svg id="icon-muted" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <line x1="23" y1="1" x2="1" y2="23"></line>
+      </svg>
+    </button>
+  </div>
 
   <!-- Preloader -->
   <div id="loader">
