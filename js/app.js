@@ -267,6 +267,9 @@ window.addEventListener('load', loadImages);
 const ctrlRewind = document.getElementById('ctrl-rewind');
 const ctrlPlayPause = document.getElementById('ctrl-play-pause');
 const ctrlEnd = document.getElementById('ctrl-end');
+const ctrlTimeline = document.getElementById('ctrl-timeline');
+const timeCurrent = document.getElementById('time-current');
+const timeTotal = document.getElementById('time-total');
 const ctrlMute = document.getElementById('ctrl-mute');
 const ctrlVolume = document.getElementById('ctrl-volume');
 
@@ -274,6 +277,14 @@ const iconPlay = document.getElementById('icon-play');
 const iconPause = document.getElementById('icon-pause');
 const iconVolUp = document.getElementById('icon-vol-up');
 const iconVolMute = document.getElementById('icon-vol-mute');
+
+// Time formatting helper
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
 
 // Play / Pause Toggle
 ctrlPlayPause.addEventListener('click', () => {
@@ -305,6 +316,24 @@ ctrlEnd.addEventListener('click', () => {
   if (revealVideo.duration) {
     revealVideo.currentTime = revealVideo.duration - 0.1; // Jump to end
   }
+});
+
+// Timeline Scrubbing & Updating
+revealVideo.addEventListener('loadedmetadata', () => {
+  ctrlTimeline.max = revealVideo.duration;
+  timeTotal.textContent = formatTime(revealVideo.duration);
+});
+
+revealVideo.addEventListener('timeupdate', () => {
+  // Only update timeline if user isn't currently dragging it
+  if (document.activeElement !== ctrlTimeline) {
+    ctrlTimeline.value = revealVideo.currentTime;
+  }
+  timeCurrent.textContent = formatTime(revealVideo.currentTime);
+});
+
+ctrlTimeline.addEventListener('input', (e) => {
+  revealVideo.currentTime = e.target.value;
 });
 
 // Mute Toggle
