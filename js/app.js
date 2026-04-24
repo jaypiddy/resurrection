@@ -52,8 +52,16 @@ const padZero = (num) => num.toString().padStart(3, '0');
 // Generate image path
 const getFramePath = (index) => `Public/Header Image Sequence/PS Studios Spring 2026 Agency CampaignHeader Sequence${padZero(index)}.png`;
 
+const mausoleumBg = document.querySelector('.mausoleum-bg');
+
 // --- 3. Preloader ---
 function loadImages() {
+  // Preload background video loop
+  mausoleumBg.load();
+  mausoleumBg.addEventListener('canplaythrough', () => {
+    mausoleumBg.play().catch(e => console.log('Bg loop autoplay blocked:', e));
+  }, { once: true });
+
   for (let i = 0; i < FRAME_COUNT; i++) {
     const img = new Image();
     img.src = getFramePath(i);
@@ -171,7 +179,6 @@ function setupAnimations() {
       // Reveal Video Section at the very end
       if (self.progress > 0.99) {
         if (isAudioPlaying && !bgAudio.paused) bgAudio.pause();
-        videoSection.style.visibility = 'visible';
         videoSection.style.opacity = '1';
         videoSection.style.pointerEvents = 'auto';
         
@@ -191,12 +198,6 @@ function setupAnimations() {
 
         videoSection.style.opacity = '0';
         videoSection.style.pointerEvents = 'none';
-        // Need a slight timeout to wait for fade out before hidden
-        setTimeout(() => {
-          if (videoSection.style.opacity === '0') {
-            videoSection.style.visibility = 'hidden';
-          }
-        }, 500);
       }
     }
   });
