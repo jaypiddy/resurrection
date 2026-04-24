@@ -14,6 +14,6 @@ jobs:
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PS_ACTIVE_STRATEGY_APP_2026 }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PS_CAMPAIGN_RESURRECTION }}
           channelId: live
-          projectId: ps-active-strategy-app-2026
+          projectId: ps-campaign-resurrection
