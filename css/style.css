@@ -1,0 +1,452 @@
+:root {
+  --bg-color: #000000;
+  --text-color: #e4dfd3;
+  --accent-color: #c9bda4;
+  --font-primary: 'Creepster', system-ui, cursive;
+  --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-secondary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Preloader */
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg-color);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease;
+}
+
+.loader-content {
+  text-align: center;
+  width: 200px;
+}
+
+.loader-text {
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  color: var(--accent-color);
+}
+
+.loader-bar-bg {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+#loader-bar {
+  width: 0%;
+  height: 100%;
+  background: var(--accent-color);
+  transition: width 0.1s linear;
+}
+
+/* Hero Section */
+.hero-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none; /* Let clicks pass to canvas/video */
+  padding: 8vh 0;
+}
+
+.hero-header-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10vh;
+}
+
+.hero-logo-svg {
+  width: 250px;
+  height: 80px;
+  margin-bottom: 2vh;
+  opacity: 0.9;
+  color: var(--accent-color);
+}
+
+.hero-eyebrow {
+  font-family: var(--font-secondary);
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: var(--text-color);
+  font-weight: 300;
+  margin-bottom: 2vh;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+.hero-title {
+  font-family: var(--font-primary);
+  font-size: clamp(3rem, 8vw, 6rem);
+  text-align: center;
+  font-weight: 400;
+  color: var(--accent-color);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  max-width: 90vw;
+}
+
+/* Mute Button */
+.mute-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--accent-color);
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.mute-btn:hover {
+  background: rgba(201, 189, 164, 0.1);
+}
+
+.mute-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5vh;
+  opacity: 0.8;
+}
+
+.arrow-down {
+  width: 40px;
+  height: 60px;
+  border: 1px solid var(--accent-color);
+  border-radius: 20px;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.arrow-down::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  width: 2px;
+  height: 15px;
+  background-color: var(--accent-color);
+  transform: translateX(-50%);
+}
+
+.arrow-down::after {
+  content: '';
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--accent-color);
+  border-bottom: 2px solid var(--accent-color);
+  transform: translateX(-50%) rotate(45deg);
+  animation: scrollPulse 2s infinite;
+}
+
+@keyframes scrollPulse {
+  0% { transform: translateX(-50%) rotate(45deg) translate(-2px, -2px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateX(-50%) rotate(45deg) translate(5px, 5px); opacity: 0; }
+}
+
+.scroll-text {
+  font-family: var(--font-secondary);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  color: var(--accent-color);
+}
+
+.scroll-text span {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  text-transform: lowercase;
+}
+
+/* Canvas */
+.canvas-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  background: var(--bg-color);
+}
+
+#sequence-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Spacer for Scroll */
+#scroll-container {
+  position: relative;
+  width: 100%;
+  height: 600vh; /* Adjust for scroll duration */
+  z-index: 1; /* Below fixed elements */
+}
+
+/* Video Section */
+#video-section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+  overflow: hidden;
+}
+
+/* Mausoleum Background Loop */
+.mausoleum-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.mausoleum-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+/* Video Overlay Content Container */
+.video-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  position: relative;
+  z-index: 101;
+}
+
+.video-headline {
+  font-family: var(--font-primary);
+  font-size: clamp(1.5rem, 4vw, 3rem); /* 50% smaller than main headline */
+  color: var(--accent-color);
+  text-align: center;
+  font-weight: 400;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  max-width: 80vw;
+}
+
+/* Play Button */
+#play-button {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 101;
+}
+
+#play-button svg {
+  width: 40px;
+  height: 40px;
+  margin-left: 5px; /* Visual center adjustment */
+}
+
+#play-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+/* Inline Video Player Container */
+#video-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#video-container.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 102;
+}
+
+#reveal-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Inline cinematic fit */
+}
+
+#close-video {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: none;
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  z-index: 103;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+#close-video:hover {
+  opacity: 1;
+}
+
+/* Custom Video Controls */
+.video-controls {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 10px 20px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 103;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+#video-container.active .video-controls {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.5s;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--accent-color);
+}
+
+.control-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.volume-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding-left: 20px;
+}
+
+#ctrl-volume {
+  width: 80px;
+  cursor: pointer;
+  accent-color: var(--accent-color);
+}
