@@ -108,7 +108,7 @@ body {
 .hero-logo-svg {
   width: 250px;
   height: 80px;
-  margin-bottom: 2vh;
+  margin-bottom: 5vh;
   opacity: 0.9;
   color: var(--accent-color);
 }
@@ -510,4 +510,35 @@ body {
   width: 80px;
   cursor: pointer;
   accent-color: var(--accent-color);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .hero-logo-svg {
+    margin-bottom: 6vh;
+  }
+
+  .footer-text {
+    font-size: 0.55rem;
+    line-height: 1.4;
+    max-width: 75%;
+  }
+
+  .vertical-bar {
+    display: block;
+    color: transparent;
+    height: 4px;
+    margin: 0;
+  }
+
+  .mute-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+  }
+
+  .mute-btn svg {
+    width: 16px;
+    height: 16px;
+  }
 }
