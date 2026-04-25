@@ -38,6 +38,13 @@ try {
 const loader = document.getElementById('loader');
 const loaderBar = document.getElementById('loader-bar');
 const hero = document.getElementById('hero');
+
+// Apply a gamma/brightness lift specifically for Chrome to fix crushed blacks in canvas
+const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+if (isChrome) {
+  canvas.style.filter = 'brightness(1.15) contrast(0.95)';
+}
+
 const scrollContainer = document.getElementById('scroll-container');
 const videoSection = document.getElementById('video-section');
 const playBtn = document.getElementById('play-button');
