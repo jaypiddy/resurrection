@@ -23,7 +23,18 @@ let currentFrame = -1;
 let imagesLoaded = 0;
 
 const canvas = document.getElementById('sequence-canvas');
-const ctx = canvas.getContext('2d');
+
+// Attempt to use display-p3 color space to match Safari's lighter rendering on Macs
+let ctxOptions = {};
+if (window.matchMedia && window.matchMedia("(color-gamut: p3)").matches) {
+  ctxOptions.colorSpace = 'display-p3';
+}
+let ctx;
+try {
+  ctx = canvas.getContext('2d', ctxOptions);
+} catch (e) {
+  ctx = canvas.getContext('2d'); // fallback
+}
 const loader = document.getElementById('loader');
 const loaderBar = document.getElementById('loader-bar');
 const hero = document.getElementById('hero');
