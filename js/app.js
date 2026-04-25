@@ -78,12 +78,6 @@ const mausoleumBg = document.querySelector('.mausoleum-bg');
 
 // --- 3. Preloader ---
 function loadImages() {
-  // Preload background video loop
-  mausoleumBg.load();
-  mausoleumBg.addEventListener('canplaythrough', () => {
-    mausoleumBg.play().catch(e => console.log('Bg loop autoplay blocked:', e));
-  }, { once: true });
-
   for (let i = 0; i < FRAME_COUNT; i++) {
     const img = new Image();
     img.src = getFramePath(i);
@@ -155,6 +149,25 @@ function initExperience() {
     loader.style.display = 'none';
     // Allow scrolling
     lenis.start();
+
+    // Trigger background load of videos now that preloader is done
+    const mausoleumSource = mausoleumBg.querySelector('source');
+    if (mausoleumSource && mausoleumSource.dataset.src) {
+      mausoleumSource.src = mausoleumSource.dataset.src;
+      mausoleumBg.load();
+      mausoleumBg.play().catch(e => console.log('Bg loop autoplay blocked:', e));
+    }
+
+    const revealSources = revealVideo.querySelectorAll('source');
+    let needsRevealLoad = false;
+    revealSources.forEach(s => {
+      if (s.dataset.src) {
+        s.src = s.dataset.src;
+        needsRevealLoad = true;
+      }
+    });
+    if (needsRevealLoad) revealVideo.load();
+
   }, 800);
   
   // Initial setup
