@@ -267,6 +267,7 @@ playBtn.addEventListener('click', () => {
     playBtn.style.display = 'none';
     videoContainer.classList.add('active');
     revealVideo.play();
+    if (typeof resetInactivityTimer === 'function') resetInactivityTimer();
   }, 300);
 });
 
@@ -361,6 +362,33 @@ const iconPlay = document.getElementById('icon-play');
 const iconPause = document.getElementById('icon-pause');
 const iconVolUp = document.getElementById('icon-vol-up');
 const iconVolMute = document.getElementById('icon-vol-mute');
+
+const videoControls = document.querySelector('.video-controls');
+
+// Fade controls on mouse inactivity
+let inactivityTimer;
+
+function resetInactivityTimer() {
+  if (videoControls) {
+    videoControls.classList.remove('faded');
+  }
+  
+  clearTimeout(inactivityTimer);
+  
+  // Only start fading timer if the video player is active
+  if (videoContainer.classList.contains('active')) {
+    inactivityTimer = setTimeout(() => {
+      if (videoControls) {
+        videoControls.classList.add('faded');
+      }
+    }, 2500); // 2.5 seconds of inactivity
+  }
+}
+
+// Reset timer on any movement or interaction
+document.addEventListener('mousemove', resetInactivityTimer);
+document.addEventListener('click', resetInactivityTimer);
+document.addEventListener('touchstart', resetInactivityTimer);
 
 // Time formatting helper
 function formatTime(seconds) {
