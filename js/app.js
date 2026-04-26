@@ -245,6 +245,21 @@ function setupAnimations() {
 }
 
 // --- 7. Video Interaction ---
+const stoneSoundIn = new Audio('Public/StoneSound_1.m4a');
+const stoneSoundOut = new Audio('Public/StoneSound_2.m4a');
+stoneSoundIn.load();
+stoneSoundOut.load();
+
+playBtn.addEventListener('mouseenter', () => {
+  stoneSoundIn.currentTime = 0;
+  stoneSoundIn.play().catch(e => console.log('Audio play failed:', e));
+});
+
+playBtn.addEventListener('mouseleave', () => {
+  stoneSoundOut.currentTime = 0;
+  stoneSoundOut.play().catch(e => console.log('Audio play failed:', e));
+});
+
 playBtn.addEventListener('click', () => {
   // Hide play button, show video player
   playBtn.style.opacity = '0';

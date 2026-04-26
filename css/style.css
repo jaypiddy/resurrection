@@ -361,32 +361,46 @@ body {
 
 /* Play Button */
 #play-button {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  width: clamp(120px, 15vw, 180px);
+  height: auto;
+  background: none;
+  border: none;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  display: block;
+  padding: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
   z-index: 101;
+  position: relative;
 }
 
-#play-button svg {
-  width: 40px;
-  height: 40px;
-  margin-left: 5px; /* Visual center adjustment */
+#play-button img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: opacity 0.4s ease;
+}
+
+.stone-play-default {
+  opacity: 1;
+}
+
+.stone-play-hover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
 }
 
 #play-button:hover {
-  background: rgba(255, 255, 255, 0.15);
   transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+#play-button:hover .stone-play-default {
+  opacity: 0;
+}
+
+#play-button:hover .stone-play-hover {
+  opacity: 1;
 }
 
 /* Inline Video Player Container */
