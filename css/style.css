@@ -1,9 +1,23 @@
+@font-face {
+  font-family: 'BNCringeSans-Black';
+  src: url('../Public/BNCringeSans-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'BNCringeSans-Light';
+  src: url('../Public/BNCringeSans-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
 :root {
   --bg-color: #000000;
   --text-color: #e4dfd3;
   --accent-color: #c9bda4;
-  --font-primary: 'Creepster', system-ui, cursive;
-  --font-secondary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-primary: 'BNCringeSans-Black', system-ui, sans-serif;
+  --font-secondary: 'Syne Mono', monospace;
 }
 
 * {

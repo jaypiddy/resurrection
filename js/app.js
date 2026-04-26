@@ -1,3 +1,5 @@
+import { getAgencyData } from './firebase-client.js';
+
 // --- 1. Lenis Smooth Scroll Setup ---
 const lenis = new Lenis({
   duration: 1.5,
@@ -300,7 +302,35 @@ const enableAudio = () => {
 });
 
 // Start Loading
-window.addEventListener('load', loadImages);
+window.addEventListener('load', async () => {
+  // Check for dynamic agency route
+  const path = window.location.pathname.replace(/^\/|\/$/g, ''); // strip slashes
+  if (path && path !== 'admin' && path !== 'index.html') {
+    const agencyData = await getAgencyData(path);
+    if (agencyData) {
+      // Update DOM
+      const agencyDisplay = document.getElementById('agency-name-display');
+      if (agencyDisplay && agencyData.agencyName) {
+        agencyDisplay.textContent = `HELLO ${agencyData.agencyName.toUpperCase()}.`;
+      }
+      
+      // Update Reveal Video Data Src
+      if (agencyData.videoUrl) {
+        const revealVideo = document.getElementById('reveal-video');
+        revealVideo.innerHTML = ''; // clear existing static sources
+        const newSource = document.createElement('source');
+        newSource.dataset.src = agencyData.videoUrl;
+        newSource.type = agencyData.videoUrl.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
+        revealVideo.appendChild(newSource);
+      }
+    } else {
+      // If a path was provided but no agency found, fallback gracefully or update UI
+      console.log("No custom agency data found for this slug.");
+    }
+  }
+
+  loadImages();
+});
 
 // --- 9. Custom Video Player Controls ---
 const ctrlRewind = document.getElementById('ctrl-rewind');

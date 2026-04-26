@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agency Backend</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+  
+  <!-- IBM Carbon Design System CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css">
+  
+  <style>
+    body {
+      background-color: #f4f4f4;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: #ffffff;
+      padding: 2.5rem;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .agency-card {
+      padding: 1rem;
+      border: 1px solid #e0e0e0;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f4f4f4;
+    }
+    h2 {
+      margin-bottom: 2rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .bx--file__selected-file {
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body class="bx--body">
+
+  <!-- Login Container -->
+  <div class="container" id="login-container">
+    <h2>Admin Login</h2>
+    <div class="form-group bx--form-item">
+      <label for="email" class="bx--label">Email</label>
+      <input id="email" type="email" class="bx--text-input" placeholder="admin@powershifter.com">
+    </div>
+    <div class="form-group bx--form-item">
+      <label for="password" class="bx--label">Password</label>
+      <input id="password" type="password" class="bx--text-input">
+    </div>
+    <div id="login-error" class="bx--form-requirement hidden" style="color: #da1e28; margin-bottom: 1rem;"></div>
+    <button id="login-btn" class="bx--btn bx--btn--primary">Log In</button>
+  </div>
+
+  <!-- Dashboard Container -->
+  <div class="container hidden" id="dashboard-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h2>Agencies Dashboard</h2>
+      <button id="logout-btn" class="bx--btn bx--btn--ghost">Log Out</button>
+    </div>
+
+    <button id="show-create-btn" class="bx--btn bx--btn--primary" style="margin-bottom: 2rem;">Create New Agency</button>
+    
+    <div id="agencies-list">
+      <!-- Agencies dynamically populated here -->
+      <p id="no-agencies" class="hidden">No agencies found.</p>
+    </div>
+  </div>
+
+  <!-- Create Container -->
+  <div class="container hidden" id="create-container">
+    <h2>Create New Agency Instance</h2>
+    
+    <div class="form-group bx--form-item">
+      <label for="agency-name" class="bx--label">Agency Name</label>
+      <input id="agency-name" type="text" class="bx--text-input" placeholder="e.g. Wieden+Kennedy">
+    </div>
+    
+    <div class="form-group bx--form-item">
+      <label for="agency-slug" class="bx--label">URL Slug</label>
+      <input id="agency-slug" type="text" class="bx--text-input" placeholder="e.g. wieden-kennedy">
+      <div class="bx--form__helper-text">This will create: resurrection.web.app/wieden-kennedy</div>
+    </div>
+    
+    <div class="form-group bx--form-item">
+      <strong class="bx--label">Reveal Video Upload</strong>
+      <div class="bx--file">
+        <label for="video-file" class="bx--file-btn bx--btn bx--btn--tertiary" role="button" tabindex="0">Select Video File (.mp4, .mov)</label>
+        <input type="file" class="bx--file-input" id="video-file" accept="video/mp4,video/quicktime">
+        <div class="bx--file-container">
+          <div class="bx--file__selected-file">
+            <p class="bx--file-filename" id="file-name-display">No file selected</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="upload-progress-container" class="hidden form-group">
+      <label class="bx--label" id="progress-text">Uploading Video... 0%</label>
+      <progress id="upload-progress" max="100" value="0" style="width: 100%; height: 10px;"></progress>
+    </div>
+    
+    <div id="create-error" class="bx--form-requirement hidden" style="color: #da1e28; margin-bottom: 1rem;"></div>
+
+    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+      <button id="save-agency-btn" class="bx--btn bx--btn--primary">Save & Publish</button>
+      <button id="cancel-create-btn" class="bx--btn bx--btn--secondary">Cancel</button>
+    </div>
+  </div>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
