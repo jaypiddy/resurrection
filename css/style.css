@@ -71,7 +71,16 @@ body {
 
 .loader-content {
   text-align: center;
-  width: 200px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loader-video {
+  width: 100%;
+  max-width: 250px;
+  margin-bottom: 1.5rem;
 }
 
 .loader-text {
@@ -347,6 +356,10 @@ body {
   gap: 2rem;
   position: relative;
   z-index: 101;
+  width: 100vw;
+  height: 100vh;
+  padding: 8vh 0;
+  justify-content: flex-start;
 }
 
 .video-headline {
@@ -359,10 +372,8 @@ body {
   max-width: 80vw;
 }
 
-/* Play Button */
-#play-button {
-  width: clamp(120px, 15vw, 180px);
-  height: auto;
+/* Stone Button Base */
+.stone-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -373,34 +384,79 @@ body {
   position: relative;
 }
 
-#play-button img {
+.stone-btn img {
   width: 100%;
   height: auto;
   display: block;
   transition: opacity 0.4s ease;
 }
 
-.stone-play-default {
+.stone-btn-default {
   opacity: 1;
 }
 
-.stone-play-hover {
+.stone-btn-hover {
   position: absolute;
   top: 0;
   left: 0;
   opacity: 0;
 }
 
+
+
+.stone-btn:hover .stone-btn-default {
+  opacity: 0;
+}
+
+.stone-btn:hover .stone-btn-hover {
+  opacity: 1;
+}
+
+/* Play Button specific size */
+#play-button {
+  width: clamp(120px, 15vw, 180px);
+}
+
 #play-button:hover {
   transform: scale(1.05);
 }
 
-#play-button:hover .stone-play-default {
-  opacity: 0;
+/* Video Section Logo */
+.video-logo-svg {
+  width: 125px;
+  height: 40px;
+  color: var(--accent-color);
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+  margin-top: auto;
+  margin-bottom: 2vh;
 }
 
-#play-button:hover .stone-play-hover {
-  opacity: 1;
+/* Secondary Actions Container */
+.secondary-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(20px, 4vw, 60px); /* Using a responsive gap instead of 15% to prevent wrapping */
+  flex-wrap: wrap;
+  width: 100%;
+  transition: opacity 0.3s ease;
+}
+
+.secondary-actions .stone-btn {
+  width: clamp(100px, 12vw, 160px);
+}
+
+.secondary-actions button:nth-child(1):hover {
+  transform: scale(1.05) rotate(-3deg);
+}
+
+.secondary-actions button:nth-child(2):hover {
+  transform: scale(1.05) rotate(2deg) translateY(-4px);
+}
+
+.secondary-actions button:nth-child(3):hover {
+  transform: scale(1.05) rotate(-1.5deg) translateY(2px);
 }
 
 /* Inline Video Player Container */
@@ -551,6 +607,10 @@ body {
     margin-bottom: 6vh;
   }
 
+  .video-logo-svg {
+    margin-bottom: 4vh;
+  }
+
   .footer-text {
     font-size: 0.55rem;
     line-height: 1.4;
@@ -573,5 +633,14 @@ body {
   .mute-btn svg {
     width: 16px;
     height: 16px;
+  }
+
+  .secondary-actions {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .secondary-actions .stone-btn {
+    width: clamp(140px, 40vw, 200px);
   }
 }

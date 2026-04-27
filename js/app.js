@@ -246,42 +246,76 @@ function setupAnimations() {
 
 // --- 7. Video Interaction ---
 const stoneSoundIn = new Audio('Public/StoneSound_1.m4a');
-const stoneSoundOut = new Audio('Public/StoneSound_2.m4a');
 stoneSoundIn.load();
-stoneSoundOut.load();
+
+const secondaryActions = document.querySelector('.secondary-actions');
+const videoLogoSvg = document.querySelector('.video-logo-svg');
+const stoneBtns = document.querySelectorAll('.stone-btn');
+const showReelBtn = document.getElementById('show-reel-btn');
+
+let mainVideoSrcs = revealVideo.innerHTML;
+
+function openVideoPlayer(customSrc = null) {
+  playBtn.style.opacity = '0';
+  if (videoLogoSvg) videoLogoSvg.style.opacity = '0';
+  if (secondaryActions) secondaryActions.style.opacity = '0';
+  
+  if (customSrc) {
+    revealVideo.innerHTML = `<source src="${customSrc}" type="${customSrc.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4'}">`;
+  } else {
+    revealVideo.innerHTML = mainVideoSrcs;
+    const sources = revealVideo.querySelectorAll('source');
+    sources.forEach(s => {
+      if (s.dataset.src && !s.src) s.src = s.dataset.src;
+    });
+  }
+  revealVideo.load();
+  
+  setTimeout(() => {
+    playBtn.style.display = 'none';
+    if (videoLogoSvg) videoLogoSvg.style.display = 'none';
+    if (secondaryActions) secondaryActions.style.display = 'none';
+    videoContainer.classList.add('active');
+    revealVideo.play().catch(e => console.log('Video play failed:', e));
+    if (typeof resetInactivityTimer === 'function') resetInactivityTimer();
+  }, 300);
+}
 
 playBtn.addEventListener('mouseenter', () => {
   stoneSoundIn.currentTime = 0;
   stoneSoundIn.play().catch(e => console.log('Audio play failed:', e));
 });
 
-playBtn.addEventListener('mouseleave', () => {
-  stoneSoundOut.currentTime = 0;
-  stoneSoundOut.play().catch(e => console.log('Audio play failed:', e));
+playBtn.addEventListener('click', () => {
+  openVideoPlayer();
 });
 
-playBtn.addEventListener('click', () => {
-  // Hide play button, show video player
-  playBtn.style.opacity = '0';
-  setTimeout(() => {
-    playBtn.style.display = 'none';
-    videoContainer.classList.add('active');
-    revealVideo.play();
-    if (typeof resetInactivityTimer === 'function') resetInactivityTimer();
-  }, 300);
-});
+if (showReelBtn) {
+  showReelBtn.addEventListener('mouseenter', () => {
+    stoneSoundIn.currentTime = 0;
+    stoneSoundIn.play().catch(e => console.log('Audio play failed:', e));
+  });
+
+  showReelBtn.addEventListener('click', () => {
+    openVideoPlayer('Public/PS_SIZZLE_NEW_MUSIC.MOV');
+  });
+}
 
 closeVideoBtn.addEventListener('click', () => {
   revealVideo.pause();
   revealVideo.currentTime = 0;
   videoContainer.classList.remove('active');
   
-  // Bring back play button
+  // Bring back play button, logo, and secondary actions
   setTimeout(() => {
-    playBtn.style.display = 'flex';
+    playBtn.style.display = 'block';
+    if (videoLogoSvg) videoLogoSvg.style.display = 'block';
+    if (secondaryActions) secondaryActions.style.display = 'flex';
     // Trigger reflow
     void playBtn.offsetWidth;
     playBtn.style.opacity = '1';
+    if (videoLogoSvg) videoLogoSvg.style.opacity = '0.9'; // Match original opacity
+    if (secondaryActions) secondaryActions.style.opacity = '1';
   }, 500);
 });
 
@@ -337,7 +371,12 @@ window.addEventListener('load', async () => {
         const newSource = document.createElement('source');
         newSource.dataset.src = agencyData.videoUrl;
         newSource.type = agencyData.videoUrl.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
-        revealVideo.appendChild(newSource);
+                revealVideo.appendChild(newSource);
+        
+        // Update stored main sources so main play button works
+        if (typeof mainVideoSrcs !== 'undefined') {
+          mainVideoSrcs = revealVideo.innerHTML;
+        }
       }
     } else {
       // If a path was provided but no agency found, fallback gracefully or update UI
