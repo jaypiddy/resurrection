@@ -250,17 +250,23 @@ const showReelBtn = document.getElementById('show-reel-btn');
 let mainVideoSrcs = revealVideo.innerHTML;
 
 function openVideoPlayer(customSrc = null) {
-
+  // Stop background rain audio
+  if (!bgAudio.paused) {
+    bgAudio.pause();
+  }
   
   if (customSrc) {
-    revealVideo.innerHTML = `<source src="${customSrc}" type="${customSrc.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4'}">`;
+    revealVideo.src = customSrc;
   } else {
+    // If returning to main video, clear src and use sources
+    revealVideo.src = '';
     revealVideo.innerHTML = mainVideoSrcs;
     const sources = revealVideo.querySelectorAll('source');
     sources.forEach(s => {
-      if (s.dataset.src && !s.src) s.src = s.dataset.src;
+      if (s.dataset.src) s.src = s.dataset.src;
     });
   }
+  
   revealVideo.load();
   
   // Call play synchronously to preserve user gesture
@@ -270,8 +276,8 @@ function openVideoPlayer(customSrc = null) {
   }
   
   setTimeout(() => {
-
     videoContainer.classList.add('active');
+    if (typeof lenis !== 'undefined') lenis.stop();
     if (typeof resetInactivityTimer === 'function') resetInactivityTimer();
   }, 300);
 }
@@ -292,6 +298,7 @@ closeVideoBtn.addEventListener('click', () => {
   revealVideo.pause();
   revealVideo.currentTime = 0;
   videoContainer.classList.remove('active');
+  if (typeof lenis !== 'undefined') lenis.start();
   
   // Bring back play button, logo, and secondary actions
   setTimeout(() => {
@@ -321,6 +328,7 @@ function openTextModal(modalType) {
   
   if(textModalContainer) {
     textModalContainer.classList.add('active');
+    if (typeof lenis !== 'undefined') lenis.stop();
   }
 }
 
@@ -339,6 +347,7 @@ if (aboutStudioBtn) {
 if (closeTextModalBtn) {
   closeTextModalBtn.addEventListener('click', () => {
     textModalContainer.classList.remove('active');
+    if (typeof lenis !== 'undefined') lenis.start();
   });
 }
 
@@ -360,6 +369,12 @@ muteBtn.addEventListener('click', (e) => {
 });
 
 const enableAudio = () => {
+  // Prevent background audio from playing if we are in the video section
+  if (videoSection.style.opacity === '1') {
+    userHasInteracted = true;
+    return;
+  }
+
   if (!userHasInteracted) {
     bgAudio.play().then(() => {
       isAudioPlaying = true;
