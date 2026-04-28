@@ -744,7 +744,7 @@ body {
 }
 
 /* --- Mobile Layout Overrides --- */
-@media (max-width: 768px) {
+@media (orientation: portrait), (max-width: 768px) {
   .mausoleum-aspect-inner {
     background-image: url('../Public/Interior_Crypt_Mobile.jpg');
     aspect-ratio: 1280 / 2276;
