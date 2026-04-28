@@ -764,7 +764,7 @@ body {
   /* Mobile Positioning (Top to Bottom) */
   #about-studio-btn { top: 14%; left: 50%; }
   
-  .video-headline { top: 24%; font-size: clamp(1.2rem, 5vw, 1.8rem); white-space: normal; width: 90vw; }
+  .video-headline { top: 24%; font-size: clamp(1.2rem, 5vw, 1.8rem); line-height: 1.3; white-space: normal; width: 90vw; }
   
   #play-button { top: 34%; }
   
@@ -790,10 +790,10 @@ body {
     margin: 0;
   }
   
-  .text-part-1 { top: 43%; }
-  .text-part-2 { top: 47%; }
-  .text-part-3 { top: 69%; }
-  .text-part-4 { top: 73%; }
+  .text-part-1 { top: 44%; }
+  .text-part-2 { top: 46.5%; }
+  .text-part-3 { top: 70%; }
+  .text-part-4 { top: 72.5%; }
   
   #show-reel-btn { top: 59%; left: 50%; }
   
