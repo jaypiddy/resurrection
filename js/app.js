@@ -76,7 +76,7 @@ const padZero = (num) => num.toString().padStart(3, '0');
 // Generate image path
 const getFramePath = (index) => `Public/Header Image Sequence/PS Studios Spring 2026 Agency CampaignHeader Sequence${padZero(index)}.png`;
 
-const mausoleumBg = document.querySelector('.mausoleum-bg');
+
 
 // --- 3. Preloader ---
 function loadImages() {
@@ -152,13 +152,7 @@ function initExperience() {
     // Allow scrolling
     lenis.start();
 
-    // Trigger background load of videos now that preloader is done
-    const mausoleumSource = mausoleumBg.querySelector('source');
-    if (mausoleumSource && mausoleumSource.dataset.src) {
-      mausoleumSource.src = mausoleumSource.dataset.src;
-      mausoleumBg.load();
-      mausoleumBg.play().catch(e => console.log('Bg loop autoplay blocked:', e));
-    }
+
 
     const revealSources = revealVideo.querySelectorAll('source');
     let needsRevealLoad = false;
@@ -256,8 +250,7 @@ const showReelBtn = document.getElementById('show-reel-btn');
 let mainVideoSrcs = revealVideo.innerHTML;
 
 function openVideoPlayer(customSrc = null) {
-  const allUIElements = document.querySelectorAll('.mausoleum-aspect-inner > *');
-  allUIElements.forEach(el => el.style.opacity = '0');
+
   
   if (customSrc) {
     revealVideo.innerHTML = `<source src="${customSrc}" type="${customSrc.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4'}">`;
@@ -277,8 +270,7 @@ function openVideoPlayer(customSrc = null) {
   }
   
   setTimeout(() => {
-    const allUIElements = document.querySelectorAll('.mausoleum-aspect-inner > *');
-    allUIElements.forEach(el => el.style.display = 'none');
+
     videoContainer.classList.add('active');
     if (typeof resetInactivityTimer === 'function') resetInactivityTimer();
   }, 300);
@@ -303,26 +295,7 @@ closeVideoBtn.addEventListener('click', () => {
   
   // Bring back play button, logo, and secondary actions
   setTimeout(() => {
-    const allUIElements = document.querySelectorAll('.mausoleum-aspect-inner > *');
-    allUIElements.forEach(el => {
-      // Restore appropriate display based on tag/class
-      if (el.tagName === 'BUTTON' || el.tagName === 'SVG' || el.tagName === 'H2') {
-        el.style.display = 'block';
-      } else if (el.classList.contains('secondary-text-group')) {
-        el.style.display = 'flex';
-      } else {
-        el.style.display = 'block';
-      }
-    });
-    // Trigger reflow
-    void document.body.offsetWidth;
-    allUIElements.forEach(el => {
-      if (el.tagName === 'SVG') {
-        el.style.opacity = '0.9';
-      } else {
-        el.style.opacity = '1';
-      }
-    });
+
   }, 500);
 });
 

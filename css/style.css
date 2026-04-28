@@ -371,6 +371,7 @@ body {
   position: absolute;
   transform: translate(-50%, -50%);
   left: 50%; /* Default center X */
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 /* Typography */
@@ -384,7 +385,7 @@ body {
   white-space: nowrap;
   
   /* Desktop Position */
-  top: 36%;
+  top: 40.5%;
 }
 
 .secondary-text-group {
@@ -396,15 +397,15 @@ body {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
   
   /* Desktop Position */
-  top: 80%;
   display: flex;
   justify-content: center;
   gap: 0.5rem;
 }
+.top-group { top: 88%; }
+.bottom-group { top: 88%; margin-left: 17vw; } /* Push the second half slightly to the right so it reads as one line */
 
 /* On desktop, keep text on one line */
 .text-part-1, .text-part-2, .text-part-3, .text-part-4 { margin: 0; }
-.text-part-3::before { content: " "; }
 
 /* Stone Button Base - Updated Hover */
 .stone-btn {
@@ -434,36 +435,27 @@ body {
 
 /* Desktop Plaque Positions */
 #play-button {
-  top: 18%;
+  top: 20%;
 }
 
 #show-reel-btn {
-  top: 61%;
-  left: 19%;
+  top: 62.5%;
+  left: 18.5%;
 }
 
 button[aria-label="Slop Free Guarantee"] {
-  top: 61%;
+  top: 62.5%;
   left: 50%;
 }
 
 button[aria-label="About The Studio"] {
-  top: 61%;
-  left: 81%;
+  top: 62.5%;
+  left: 81.5%;
 }
 
 /* Video Section Logo */
 .video-logo-svg {
-  width: 150px;
-  height: 48px;
-  color: var(--accent-color);
-  opacity: 0.9;
-  
-  /* Desktop Position */
-  position: absolute;
-  top: 5%;
-  left: 12%;
-  transform: translate(-50%, -50%);
+  display: none;
 }
 
 /* Secondary Actions Container */
@@ -698,32 +690,34 @@ button[aria-label="About The Studio"] {
   }
   
   /* Mobile Positioning (Top to Bottom) */
-  button[aria-label="About The Studio"] { top: 9%; left: 50%; }
+  button[aria-label="About The Studio"] { top: 14%; left: 50%; }
   
-  .video-headline { top: 20.5%; font-size: clamp(1rem, 4vw, 1.5rem); white-space: normal; width: 80%; }
+  .video-headline { top: 24%; font-size: clamp(1rem, 4vw, 1.5rem); white-space: normal; width: 80%; }
   
-  #play-button { top: 31%; }
+  #play-button { top: 34%; }
   
-  .secondary-text-group { 
-    top: 55%; 
+  .top-group { 
+    top: 48.5%; 
     flex-direction: column; 
-    gap: 15vh; /* Gap allows plaques to sit between text blocks */
+    gap: 0; 
+    margin-left: 0;
+  }
+  .bottom-group { 
+    top: 69.5%; 
+    flex-direction: column; 
+    gap: 0; 
+    margin-left: 0;
   }
   
   /* Make text stack correctly on mobile */
-  .text-part-1, .text-part-2 { display: inline; }
-  .text-part-3, .text-part-4 { display: inline; }
+  .text-part-1, .text-part-2, .text-part-3, .text-part-4 { display: block; margin-bottom: 5px; }
+  .text-part-3::before { content: none; }
   
-  .text-part-1::after { content: "\A"; white-space: pre; }
-  .text-part-3::before { content: ""; }
-  .text-part-3::after { content: "\A"; white-space: pre; }
+  #show-reel-btn { top: 59%; left: 50%; }
   
-  #show-reel-btn { top: 54%; left: 50%; }
-  
-  button[aria-label="Slop Free Guarantee"] { top: 82%; left: 50%; }
+  button[aria-label="Slop Free Guarantee"] { top: 83.5%; left: 50%; }
   
   .video-logo-svg {
-    top: 95%;
-    left: 50%;
+    display: none;
   }
 }
