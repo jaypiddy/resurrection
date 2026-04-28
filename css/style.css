@@ -601,9 +601,11 @@ body {
 }
 
 .modal-logo {
-  height: 90px;
+  height: 50px;
+  width: auto;
   margin-top: 20px;
   display: block;
+  color: var(--accent-color);
 }
 
 .modal-content strong {
