@@ -327,109 +327,143 @@ body {
   overflow: hidden;
 }
 
-/* Mausoleum Background Loop */
-.mausoleum-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 1;
-}
 
-.mausoleum-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 2;
-}
-
-/* Video Overlay Content Container */
-.video-overlay-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
+/* Mausoleum Responsive Aspect Ratio Wrapper */
+.mausoleum-aspect-wrapper {
   position: relative;
-  z-index: 101;
   width: 100vw;
   height: 100vh;
-  padding: 8vh 0;
-  justify-content: flex-start;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: black;
 }
 
+/* By default (Desktop), match the 1920x1080 image */
+.mausoleum-aspect-inner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: url('../Public/Interior_Crypt_Desktop.jpg');
+  background-size: cover;
+  background-position: center;
+  /* Use aspect-ratio to keep it perfectly scaled */
+  aspect-ratio: 16 / 9;
+  z-index: 101;
+}
+
+@media (min-aspect-ratio: 16/9) {
+  .mausoleum-aspect-inner {
+    width: 100vw;
+    height: auto;
+  }
+}
+@media (max-aspect-ratio: 16/9) {
+  .mausoleum-aspect-inner {
+    width: auto;
+    height: 100vh;
+  }
+}
+
+/* Absolute Positioning for Plaques & Elements */
+.mausoleum-aspect-inner > * {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  left: 50%; /* Default center X */
+}
+
+/* Typography */
 .video-headline {
   font-family: var(--font-primary);
-  font-size: clamp(1.5rem, 4vw, 3rem); /* 50% smaller than main headline */
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
   color: var(--accent-color);
   text-align: center;
   font-weight: 400;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-  max-width: 80vw;
+  white-space: nowrap;
+  
+  /* Desktop Position */
+  top: 36%;
 }
 
-/* Stone Button Base */
+.secondary-text-group {
+  font-family: var(--font-secondary);
+  color: var(--accent-color);
+  text-align: center;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+  width: 100%;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  
+  /* Desktop Position */
+  top: 80%;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* On desktop, keep text on one line */
+.text-part-1, .text-part-2, .text-part-3, .text-part-4 { margin: 0; }
+.text-part-3::before { content: " "; }
+
+/* Stone Button Base - Updated Hover */
 .stone-btn {
   background: none;
   border: none;
   cursor: pointer;
   display: block;
   padding: 0;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.3s ease;
   z-index: 101;
-  position: relative;
 }
 
 .stone-btn img {
   width: 100%;
   height: auto;
   display: block;
-  transition: opacity 0.4s ease;
 }
 
-.stone-btn-default {
-  opacity: 1;
+.stone-btn:hover {
+  transform: translate(-50%, -50%) rotate(-3deg) scale(1.05);
 }
 
-.stone-btn-hover {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-}
-
-
-
-.stone-btn:hover .stone-btn-default {
-  opacity: 0;
-}
-
-.stone-btn:hover .stone-btn-hover {
-  opacity: 1;
-}
-
-/* Play Button specific size */
-#play-button {
+/* Plaque Button Sizes */
+.plaque-btn {
   width: clamp(120px, 15vw, 180px);
 }
 
-#play-button:hover {
-  transform: scale(1.05);
+/* Desktop Plaque Positions */
+#play-button {
+  top: 18%;
+}
+
+#show-reel-btn {
+  top: 61%;
+  left: 19%;
+}
+
+button[aria-label="Slop Free Guarantee"] {
+  top: 61%;
+  left: 50%;
+}
+
+button[aria-label="About The Studio"] {
+  top: 61%;
+  left: 81%;
 }
 
 /* Video Section Logo */
 .video-logo-svg {
-  width: 125px;
-  height: 40px;
+  width: 150px;
+  height: 48px;
   color: var(--accent-color);
   opacity: 0.9;
-  transition: opacity 0.3s ease;
-  margin-top: auto;
-  margin-bottom: 2vh;
+  
+  /* Desktop Position */
+  position: absolute;
+  top: 5%;
+  left: 12%;
+  transform: translate(-50%, -50%);
 }
 
 /* Secondary Actions Container */
@@ -642,5 +676,54 @@ body {
 
   .secondary-actions .stone-btn {
     width: clamp(140px, 40vw, 200px);
+  }
+}
+
+/* --- Mobile Layout Overrides --- */
+@media (max-width: 768px) {
+  .mausoleum-aspect-inner {
+    background-image: url('../Public/Interior_Crypt_Mobile.jpg');
+    aspect-ratio: 1280 / 2276;
+  }
+  
+  @media (min-aspect-ratio: 1280/2276) {
+    .mausoleum-aspect-inner { width: 100vw; height: auto; }
+  }
+  @media (max-aspect-ratio: 1280/2276) {
+    .mausoleum-aspect-inner { width: auto; height: 100vh; }
+  }
+  
+  .plaque-btn {
+    width: clamp(140px, 40vw, 200px);
+  }
+  
+  /* Mobile Positioning (Top to Bottom) */
+  button[aria-label="About The Studio"] { top: 9%; left: 50%; }
+  
+  .video-headline { top: 20.5%; font-size: clamp(1rem, 4vw, 1.5rem); white-space: normal; width: 80%; }
+  
+  #play-button { top: 31%; }
+  
+  .secondary-text-group { 
+    top: 55%; 
+    flex-direction: column; 
+    gap: 15vh; /* Gap allows plaques to sit between text blocks */
+  }
+  
+  /* Make text stack correctly on mobile */
+  .text-part-1, .text-part-2 { display: inline; }
+  .text-part-3, .text-part-4 { display: inline; }
+  
+  .text-part-1::after { content: "\A"; white-space: pre; }
+  .text-part-3::before { content: ""; }
+  .text-part-3::after { content: "\A"; white-space: pre; }
+  
+  #show-reel-btn { top: 54%; left: 50%; }
+  
+  button[aria-label="Slop Free Guarantee"] { top: 82%; left: 50%; }
+  
+  .video-logo-svg {
+    top: 95%;
+    left: 50%;
   }
 }

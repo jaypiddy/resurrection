@@ -256,9 +256,8 @@ const showReelBtn = document.getElementById('show-reel-btn');
 let mainVideoSrcs = revealVideo.innerHTML;
 
 function openVideoPlayer(customSrc = null) {
-  playBtn.style.opacity = '0';
-  if (videoLogoSvg) videoLogoSvg.style.opacity = '0';
-  if (secondaryActions) secondaryActions.style.opacity = '0';
+  const allUIElements = document.querySelectorAll('.mausoleum-aspect-inner > *');
+  allUIElements.forEach(el => el.style.opacity = '0');
   
   if (customSrc) {
     revealVideo.innerHTML = `<source src="${customSrc}" type="${customSrc.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4'}">`;
@@ -271,30 +270,26 @@ function openVideoPlayer(customSrc = null) {
   }
   revealVideo.load();
   
+  // Call play synchronously to preserve user gesture
+  const playPromise = revealVideo.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(e => console.log('Video play failed:', e));
+  }
+  
   setTimeout(() => {
-    playBtn.style.display = 'none';
-    if (videoLogoSvg) videoLogoSvg.style.display = 'none';
-    if (secondaryActions) secondaryActions.style.display = 'none';
+    const allUIElements = document.querySelectorAll('.mausoleum-aspect-inner > *');
+    allUIElements.forEach(el => el.style.display = 'none');
     videoContainer.classList.add('active');
-    revealVideo.play().catch(e => console.log('Video play failed:', e));
     if (typeof resetInactivityTimer === 'function') resetInactivityTimer();
   }, 300);
 }
 
-playBtn.addEventListener('mouseenter', () => {
-  stoneSoundIn.currentTime = 0;
-  stoneSoundIn.play().catch(e => console.log('Audio play failed:', e));
-});
 
 playBtn.addEventListener('click', () => {
   openVideoPlayer();
 });
 
 if (showReelBtn) {
-  showReelBtn.addEventListener('mouseenter', () => {
-    stoneSoundIn.currentTime = 0;
-    stoneSoundIn.play().catch(e => console.log('Audio play failed:', e));
-  });
 
   showReelBtn.addEventListener('click', () => {
     openVideoPlayer('Public/PS_SIZZLE_NEW_MUSIC.MOV');
@@ -308,14 +303,26 @@ closeVideoBtn.addEventListener('click', () => {
   
   // Bring back play button, logo, and secondary actions
   setTimeout(() => {
-    playBtn.style.display = 'block';
-    if (videoLogoSvg) videoLogoSvg.style.display = 'block';
-    if (secondaryActions) secondaryActions.style.display = 'flex';
+    const allUIElements = document.querySelectorAll('.mausoleum-aspect-inner > *');
+    allUIElements.forEach(el => {
+      // Restore appropriate display based on tag/class
+      if (el.tagName === 'BUTTON' || el.tagName === 'SVG' || el.tagName === 'H2') {
+        el.style.display = 'block';
+      } else if (el.classList.contains('secondary-text-group')) {
+        el.style.display = 'flex';
+      } else {
+        el.style.display = 'block';
+      }
+    });
     // Trigger reflow
-    void playBtn.offsetWidth;
-    playBtn.style.opacity = '1';
-    if (videoLogoSvg) videoLogoSvg.style.opacity = '0.9'; // Match original opacity
-    if (secondaryActions) secondaryActions.style.opacity = '1';
+    void document.body.offsetWidth;
+    allUIElements.forEach(el => {
+      if (el.tagName === 'SVG') {
+        el.style.opacity = '0.9';
+      } else {
+        el.style.opacity = '1';
+      }
+    });
   }, 500);
 });
 
