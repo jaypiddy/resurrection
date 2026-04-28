@@ -299,6 +299,49 @@ closeVideoBtn.addEventListener('click', () => {
   }, 500);
 });
 
+// --- 7.1 Text Modals Interaction ---
+const slopFreeBtn = document.getElementById('slop-free-btn');
+const aboutStudioBtn = document.getElementById('about-studio-btn');
+
+const textModalContainer = document.getElementById('text-modal-container');
+const closeTextModalBtn = document.getElementById('close-text-modal');
+const modalContentAbout = document.getElementById('modal-content-about');
+const modalContentSlop = document.getElementById('modal-content-slop');
+
+function openTextModal(modalType) {
+  // Hide both contents
+  if(modalContentAbout) modalContentAbout.style.display = 'none';
+  if(modalContentSlop) modalContentSlop.style.display = 'none';
+  
+  if (modalType === 'about' && modalContentAbout) {
+    modalContentAbout.style.display = 'block';
+  } else if (modalType === 'slop' && modalContentSlop) {
+    modalContentSlop.style.display = 'block';
+  }
+  
+  if(textModalContainer) {
+    textModalContainer.classList.add('active');
+  }
+}
+
+if (slopFreeBtn) {
+  slopFreeBtn.addEventListener('click', () => {
+    openTextModal('slop');
+  });
+}
+
+if (aboutStudioBtn) {
+  aboutStudioBtn.addEventListener('click', () => {
+    openTextModal('about');
+  });
+}
+
+if (closeTextModalBtn) {
+  closeTextModalBtn.addEventListener('click', () => {
+    textModalContainer.classList.remove('active');
+  });
+}
+
 // --- 8. Background Audio Logic ---
 function toggleMute() {
   bgAudio.muted = !bgAudio.muted;

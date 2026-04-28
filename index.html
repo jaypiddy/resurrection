@@ -118,19 +118,17 @@
           <img src="Public/show_reel_1.png" alt="Show Reel" class="stone-btn-default">
         </button>
         
-        <button class="stone-btn plaque-btn" aria-label="Slop Free Guarantee">
+        <button id="slop-free-btn" class="stone-btn plaque-btn" aria-label="Slop Free Guarantee">
           <img src="Public/slop_free_1.png" alt="Slop Free" class="stone-btn-default">
         </button>
         
-        <button class="stone-btn plaque-btn" aria-label="About The Studio">
+        <button id="about-studio-btn" class="stone-btn plaque-btn" aria-label="About The Studio">
           <img src="Public/about_1.png" alt="About The Studio" class="stone-btn-default">
         </button>
         
-        <div class="secondary-text-group top-group">
+        <div class="secondary-text-container">
           <p class="secondary-text text-part-1">In the living memory of the biggest</p>
           <p class="secondary-text text-part-2">and best ideas...</p>
-        </div>
-        <div class="secondary-text-group bottom-group">
           <p class="secondary-text text-part-3">That were killed</p>
           <p class="secondary-text text-part-4">by constraints.</p>
         </div>
@@ -174,6 +172,32 @@
         </svg>
       </button>
     </div> <!-- Close video-container -->
+    
+    <!-- Text Modal Container -->
+    <div id="text-modal-container" class="modal-container">
+      <button id="close-text-modal" class="modal-close-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"></path>
+        </svg>
+      </button>
+      
+      <!-- About Modal -->
+      <div id="modal-content-about" class="modal-content" style="display: none;">
+        <h2>Taste, Iteration, and the Craft of Post-Production.</h2>
+        <p>Power Shifter Studios operates at the exact intersection of generative AI and traditional post-production craft. We know that pure generative video has limitations—which is why our work doesn't stop at the prompt. Our standard pipeline is absolute: <strong>Generate → Iterate → Curate → Enhance → Composite → Finalize.</strong></p>
+        <p>We rely on our years of traditional post-production experience to bridge the gap between AI generation and commercial-grade results. By bringing these two worlds together, we utilize heavy compositing layers, After Effects, and manual masking to sharpen details, remove artifacts, and force visual consistency. For us, quality depends entirely on direction, taste, and rigorous refinement.</p>
+      </div>
+
+      <!-- Slop Free Modal -->
+      <div id="modal-content-slop" class="modal-content" style="display: none;">
+        <h2>The Slop-Free Guarantee: We Iterate and Fix Until It's Flawless.</h2>
+        <p>We do not ship raw AI outputs, and we never ship "AI slop." Generative AI is a powerful camera, but it still requires a human editor. When we make our Slop-Free Guarantee, it means we aggressively iterate, mask, and composite away the limitations of the technology until the final asset meets our standards.</p>
+        <p><strong>Iteration Replaces "Takes":</strong> We routinely run dozens or hundreds of generations to capture the exact motion and framing we need, treating the latent space like a traditional film set.</p>
+        <p><strong>Post-Production Polish:</strong> Where generative models fail or hallucinate, our human editors step in. We enhance, sharpen, and manually remove temporal artifacts using traditional VFX workflows.</p>
+        <p><strong>The Bottom Line:</strong> We iterate and fix until there is zero slop left on the screen. It is production, redefined through new tools, but held to the exact same commercial-grade standards.</p>
+      </div>
+    </div> <!-- Close text-modal-container -->
+    
   </div> <!-- Close mausoleum-aspect-wrapper -->
 </div> <!-- Close video-section -->
 
