@@ -258,8 +258,8 @@ function openVideoPlayer(customSrc = null) {
   if (customSrc) {
     revealVideo.src = customSrc;
   } else {
-    // If returning to main video, clear src and use sources
-    revealVideo.src = '';
+    // If returning to main video, remove src attribute and use sources
+    revealVideo.removeAttribute('src');
     revealVideo.innerHTML = mainVideoSrcs;
     const sources = revealVideo.querySelectorAll('source');
     sources.forEach(s => {
