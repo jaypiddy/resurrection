@@ -600,6 +600,12 @@ body {
   font-size: clamp(1rem, 1.5vw, 1.25rem);
 }
 
+.modal-logo {
+  height: 90px;
+  margin-top: 20px;
+  display: block;
+}
+
 .modal-content strong {
   color: var(--accent-color);
 }

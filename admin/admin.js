@@ -114,6 +114,12 @@ loginBtn.addEventListener('click', async () => {
   }
 });
 
+passwordInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    loginBtn.click();
+  }
+});
+
 logoutBtn.addEventListener('click', () => {
   signOut(auth);
 });
