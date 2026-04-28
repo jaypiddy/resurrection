@@ -59,6 +59,9 @@ const currentYearSpan = document.getElementById('current-year');
 if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
 
 const bgAudio = document.getElementById('bg-audio');
+const waterAudio = document.getElementById('water-audio');
+if (waterAudio) waterAudio.volume = 0.2; // Low volume for ambient water
+
 const muteBtn = document.getElementById('mute-btn');
 const iconUnmuted = document.getElementById('icon-unmuted');
 const iconMuted = document.getElementById('icon-muted');
@@ -69,6 +72,7 @@ let videoWasPlayingOnScroll = false;
 // Sync initial icon state
 iconMuted.style.display = bgAudio.muted ? 'block' : 'none';
 iconUnmuted.style.display = bgAudio.muted ? 'none' : 'block';
+if (waterAudio) waterAudio.muted = bgAudio.muted;
 
 // Format number to 3 digits (e.g. 1 -> "001")
 const padZero = (num) => num.toString().padStart(3, '0');
@@ -210,6 +214,10 @@ function setupAnimations() {
       // Reveal Video Section at the very end
       if (self.progress > 0.99) {
         if (isAudioPlaying && !bgAudio.paused) bgAudio.pause();
+        if (isAudioPlaying && waterAudio && waterAudio.paused && userHasInteracted && !videoContainer.classList.contains('active')) {
+          waterAudio.play().catch(e => {});
+        }
+        
         videoSection.style.opacity = '1';
         videoSection.style.pointerEvents = 'auto';
         footerBar.style.opacity = '0';
@@ -222,6 +230,7 @@ function setupAnimations() {
         }
       } else {
         if (isAudioPlaying && bgAudio.paused && userHasInteracted) bgAudio.play().catch(e => {});
+        if (waterAudio && !waterAudio.paused) waterAudio.pause();
         
         // Pause video if scrolling away
         if (videoContainer.classList.contains('active') && !revealVideo.paused) {
@@ -253,6 +262,10 @@ function openVideoPlayer(customSrc = null) {
   // Stop background rain audio
   if (!bgAudio.paused) {
     bgAudio.pause();
+  }
+  // Stop background water audio
+  if (waterAudio && !waterAudio.paused) {
+    waterAudio.pause();
   }
   
   if (customSrc) {
@@ -298,6 +311,9 @@ closeVideoBtn.addEventListener('click', () => {
   revealVideo.pause();
   revealVideo.currentTime = 0;
   videoContainer.classList.remove('active');
+  if (isAudioPlaying && waterAudio && waterAudio.paused && userHasInteracted) {
+    waterAudio.play().catch(e => {});
+  }
   if (typeof lenis !== 'undefined') lenis.start();
   
   // Bring back play button, logo, and secondary actions
@@ -354,6 +370,7 @@ if (closeTextModalBtn) {
 // --- 8. Background Audio Logic ---
 function toggleMute() {
   bgAudio.muted = !bgAudio.muted;
+  if (waterAudio) waterAudio.muted = bgAudio.muted;
   if (bgAudio.muted) {
     iconMuted.style.display = 'block';
     iconUnmuted.style.display = 'none';
@@ -372,6 +389,11 @@ const enableAudio = () => {
   // Prevent background audio from playing if we are in the video section
   if (videoSection.style.opacity === '1') {
     userHasInteracted = true;
+    if (!isAudioPlaying && waterAudio && waterAudio.paused) {
+      waterAudio.play().then(() => {
+        isAudioPlaying = true;
+      }).catch(e => console.log('Autoplay blocked:', e));
+    }
     return;
   }
 
