@@ -388,11 +388,17 @@ function toggleMute() {
   } else {
     iconMuted.style.display = 'none';
     iconUnmuted.style.display = 'block';
+    // If user un-mutes and audio is paused, start it
+    if (!isAudioPlaying && bgAudio.paused) {
+      bgAudio.play().then(() => {
+        isAudioPlaying = true;
+      }).catch(e => console.log('Play blocked:', e));
+    }
   }
 }
 
 muteBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
+  // Allow event to bubble to window to register user interaction for autoplay
   toggleMute();
 });
 
