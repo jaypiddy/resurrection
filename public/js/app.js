@@ -303,7 +303,7 @@ playBtn.addEventListener('click', () => {
 if (showReelBtn) {
 
   showReelBtn.addEventListener('click', () => {
-    openVideoPlayer('Public/PS_SIZZLE_NEW_MUSIC.MOV');
+    openVideoPlayer('Public/PS_SIZZLE_NEW_MUSIC.mp4');
   });
 }
 
