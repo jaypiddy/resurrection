@@ -562,7 +562,7 @@ body {
   height: 100%;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
   background: #000;
   display: flex;
   align-items: center;
@@ -573,6 +573,7 @@ body {
 .modal-container.active {
   opacity: 1;
   visibility: visible;
+  transition: opacity 0.5s ease, visibility 0s linear 0s;
   pointer-events: auto;
 }
 
