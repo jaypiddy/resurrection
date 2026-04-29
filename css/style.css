@@ -198,6 +198,13 @@ body {
   opacity: 0.3;
 }
 
+.footer-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  pointer-events: auto;
+}
+
 /* Mute Button */
 .mute-btn {
   position: relative;
@@ -624,6 +631,96 @@ body {
 
 .modal-content strong {
   color: var(--accent-color);
+}
+
+/* Contact Form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.contact-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact-form label {
+  font-family: var(--font-primary);
+  color: var(--accent-color);
+  letter-spacing: 0.05em;
+  font-size: 1rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(201, 189, 164, 0.3);
+  color: var(--text-color);
+  font-family: var(--font-secondary);
+  padding: 1rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px rgba(201, 189, 164, 0.2);
+}
+
+.contact-form input[aria-invalid="true"],
+.contact-form textarea[aria-invalid="true"] {
+  border-color: #da1e28;
+}
+
+.fs-error {
+  color: #da1e28;
+  font-size: 0.85rem;
+  font-family: var(--font-secondary);
+}
+
+.contact-form .submit-btn {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  border: none;
+  font-family: var(--font-primary);
+  font-size: 1.2rem;
+  padding: 1rem 2rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: transform 0.3s var(--ease-out), filter 0.3s var(--ease-out);
+  align-self: flex-start;
+  margin-top: 1rem;
+}
+
+.contact-form .submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  filter: drop-shadow(0 5px 10px rgba(201, 189, 164, 0.2));
+}
+
+.contact-form .submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fs-success, .fs-error-main {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 5px;
+  background: rgba(0,0,0,0.5);
+}
+
+.fs-success {
+  border-left: 4px solid var(--accent-color);
+}
+
+.fs-error-main {
+  border-left: 4px solid #da1e28;
 }
 
 /* Custom Video Controls */

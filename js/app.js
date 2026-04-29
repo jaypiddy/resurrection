@@ -325,21 +325,26 @@ closeVideoBtn.addEventListener('click', () => {
 // --- 7.1 Text Modals Interaction ---
 const slopFreeBtn = document.getElementById('slop-free-btn');
 const aboutStudioBtn = document.getElementById('about-studio-btn');
+const contactBtn = document.getElementById('contact-btn');
 
 const textModalContainer = document.getElementById('text-modal-container');
 const closeTextModalBtn = document.getElementById('close-text-modal');
 const modalContentAbout = document.getElementById('modal-content-about');
 const modalContentSlop = document.getElementById('modal-content-slop');
+const modalContentContact = document.getElementById('modal-content-contact');
 
 function openTextModal(modalType) {
   // Hide both contents
   if(modalContentAbout) modalContentAbout.style.display = 'none';
   if(modalContentSlop) modalContentSlop.style.display = 'none';
+  if(modalContentContact) modalContentContact.style.display = 'none';
   
   if (modalType === 'about' && modalContentAbout) {
     modalContentAbout.style.display = 'block';
   } else if (modalType === 'slop' && modalContentSlop) {
     modalContentSlop.style.display = 'block';
+  } else if (modalType === 'contact' && modalContentContact) {
+    modalContentContact.style.display = 'block';
   }
   
   if(textModalContainer) {
@@ -357,6 +362,12 @@ if (slopFreeBtn) {
 if (aboutStudioBtn) {
   aboutStudioBtn.addEventListener('click', () => {
     openTextModal('about');
+  });
+}
+
+if (contactBtn) {
+  contactBtn.addEventListener('click', () => {
+    openTextModal('contact');
   });
 }
 

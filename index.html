@@ -35,19 +35,29 @@
       Made by the good folks at <a href="https://www.powershifter.com" target="_blank" rel="noopener noreferrer">Power//Shifter Digital</a>
     </div>
 
-    <!-- Mute Button -->
-    <button id="mute-btn" class="mute-btn" aria-label="Toggle Mute">
-      <!-- Unmuted Icon -->
-      <svg id="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" style="display: none;">
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-      </svg>
-      <!-- Muted Icon -->
-      <svg id="icon-muted" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-        <line x1="23" y1="1" x2="1" y2="23"></line>
-      </svg>
-    </button>
+    <div class="footer-actions">
+      <!-- Contact Button -->
+      <button id="contact-btn" class="mute-btn" aria-label="Contact Us">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+      </button>
+
+      <!-- Mute Button -->
+      <button id="mute-btn" class="mute-btn" aria-label="Toggle Mute">
+        <!-- Unmuted Icon -->
+        <svg id="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" style="display: none;">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <!-- Muted Icon -->
+        <svg id="icon-muted" viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="1" x2="1" y2="23"></line>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- Preloader -->
@@ -266,6 +276,41 @@
           </g>
         </svg>
       </div>
+      
+      <!-- Contact Modal -->
+      <div id="modal-content-contact" class="modal-content" style="display: none;" data-lenis-prevent>
+        <h2>Contact Us</h2>
+        <p>Ready to resurrect your big ideas? Reach out below.</p>
+        
+        <form id="contact-form" class="contact-form">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" data-fs-field required />
+            <span class="fs-error" data-fs-error="name"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" data-fs-field required />
+            <span class="fs-error" data-fs-error="email"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="4" data-fs-field required></textarea>
+            <span class="fs-error" data-fs-error="message"></span>
+          </div>
+
+          <button type="submit" class="submit-btn" data-fs-submit-btn>Send Message</button>
+        </form>
+
+        <div class="fs-success" data-fs-success style="display:none;">
+          <p><strong>Thank you!</strong> We'll be in touch shortly.</p>
+        </div>
+        <div class="fs-error-main" data-fs-error style="display:none;">
+          <p>Oops! There was a problem submitting your form.</p>
+        </div>
+      </div>
     </div> <!-- Close text-modal-container -->
     
   </div> <!-- Close mausoleum-aspect-wrapper -->
@@ -282,5 +327,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script type="module" src="js/app.js"></script>
+
+  <!-- Formspree SDK -->
+  <script>
+    window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+    formspree('initForm', { formElement: '#contact-form', formId: 'xzdynvng' });
+  </script>
+  <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>
