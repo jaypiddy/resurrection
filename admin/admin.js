@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
@@ -33,7 +33,11 @@ const progressContainer = document.getElementById('upload-progress-container');
 const progressBar = document.getElementById('upload-progress');
 const progressText = document.getElementById('progress-text');
 
+const formHeading = document.getElementById('form-heading');
+const currentVideoDisplay = document.getElementById('current-video-display');
+
 let selectedFile = null;
+let editingAgencyData = null;
 
 // Initialize
 async function init() {
@@ -81,20 +85,54 @@ function showCreate() {
   createContainer.classList.remove('hidden');
   
   // Reset Form
+  formHeading.textContent = "Create New Agency Instance";
   agencyNameInput.value = '';
   agencySlugInput.value = '';
+  agencySlugInput.disabled = false;
   videoFileInput.value = '';
   selectedFile = null;
+  editingAgencyData = null;
   fileNameDisplay.textContent = "No file selected";
+  currentVideoDisplay.classList.add('hidden');
   createError.classList.add('hidden');
   progressContainer.classList.add('hidden');
   
   // Auto-slug generation
-  agencyNameInput.addEventListener('input', (e) => {
-    // Only auto-fill if slug is empty or matches previous auto-fill
+  agencyNameInput.addEventListener('input', autoSlugGenerator);
+}
+
+function autoSlugGenerator(e) {
+  if (!editingAgencyData) {
     const slugified = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     agencySlugInput.value = slugified;
-  });
+  }
+}
+
+function showEdit(data) {
+  loginContainer.classList.add('hidden');
+  dashboardContainer.classList.add('hidden');
+  createContainer.classList.remove('hidden');
+  
+  formHeading.textContent = `Edit Agency: ${data.agencyName}`;
+  agencyNameInput.value = data.agencyName;
+  agencySlugInput.value = data.slug;
+  agencySlugInput.disabled = true;
+  agencyNameInput.removeEventListener('input', autoSlugGenerator);
+  
+  videoFileInput.value = '';
+  selectedFile = null;
+  editingAgencyData = data;
+  fileNameDisplay.textContent = "Leave empty to keep current video";
+  
+  if (data.videoPath) {
+    currentVideoDisplay.textContent = `Current Video: ${data.videoPath}`;
+    currentVideoDisplay.classList.remove('hidden');
+  } else {
+    currentVideoDisplay.classList.add('hidden');
+  }
+  
+  createError.classList.add('hidden');
+  progressContainer.classList.add('hidden');
 }
 
 // Auth Logic
@@ -151,7 +189,7 @@ saveAgencyBtn.addEventListener('click', async () => {
     return;
   }
   
-  if (!selectedFile) {
+  if (!editingAgencyData && !selectedFile) {
     createError.textContent = "Please select a video file.";
     createError.classList.remove('hidden');
     return;
@@ -162,6 +200,17 @@ saveAgencyBtn.addEventListener('click', async () => {
   progressContainer.classList.remove('hidden');
   
   try {
+    if (!selectedFile && editingAgencyData) {
+      // Editing without a new video, just update the document
+      await updateDoc(doc(db, "agencies", slug), {
+        agencyName: name
+      });
+      saveAgencyBtn.disabled = false;
+      cancelCreateBtn.disabled = false;
+      showDashboard();
+      return;
+    }
+
     // 1. Upload Video
     const storageRef = ref(storage, `agency-videos/${slug}_${selectedFile.name}`);
     const uploadTask = uploadBytesResumable(storageRef, selectedFile);
@@ -179,13 +228,28 @@ saveAgencyBtn.addEventListener('click', async () => {
         // 2. Get URL and Save to Firestore
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
         
-        await setDoc(doc(db, "agencies", slug), {
-          agencyName: name,
-          slug: slug,
-          videoUrl: downloadURL,
-          videoPath: storageRef.fullPath, // Keep path so we can delete it later
-          createdAt: new Date().toISOString()
-        });
+        if (editingAgencyData) {
+          // Update existing
+          await updateDoc(doc(db, "agencies", slug), {
+            agencyName: name,
+            videoUrl: downloadURL,
+            videoPath: storageRef.fullPath
+          });
+          
+          // Optionally delete old video
+          if (editingAgencyData.videoPath && editingAgencyData.videoPath !== storageRef.fullPath) {
+            await deleteObject(ref(storage, editingAgencyData.videoPath)).catch(err => console.warn("Could not delete old video:", err));
+          }
+        } else {
+          // Create new
+          await setDoc(doc(db, "agencies", slug), {
+            agencyName: name,
+            slug: slug,
+            videoUrl: downloadURL,
+            videoPath: storageRef.fullPath,
+            createdAt: new Date().toISOString()
+          });
+        }
         
         saveAgencyBtn.disabled = false;
         cancelCreateBtn.disabled = false;
@@ -226,6 +290,7 @@ async function loadAgencies() {
         </div>
         <div style="display: flex; gap: 1rem;">
           <a href="/${data.slug}" target="_blank" class="bx--btn bx--btn--sm bx--btn--ghost">View Site</a>
+          <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${data.slug}">Edit</button>
           <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${data.slug}" data-path="${data.videoPath || ''}">Delete</button>
         </div>
       `;
@@ -249,6 +314,18 @@ async function loadAgencies() {
             alert("Error deleting: " + error.message);
           }
         }
+      });
+    });
+    
+    // Attach edit listeners
+    const localAgenciesData = {};
+    querySnapshot.forEach(docSnap => localAgenciesData[docSnap.data().slug] = docSnap.data());
+    
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const slug = e.target.dataset.slug;
+        const data = localAgenciesData[slug];
+        if (data) showEdit(data);
       });
     });
     
