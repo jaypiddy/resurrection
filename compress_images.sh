@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory containing the image sequence
-DIR="Public/Header Image Sequence"
+DIR="public/Public/Header Image Sequence"
 
 echo "Starting compression of PNG sequence to WebP..."
 echo "This might take a minute depending on your Mac's speed."
