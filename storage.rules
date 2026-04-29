@@ -3,7 +3,7 @@ service firebase.storage {
   match /b/{bucket}/o {
     match /agency-videos/{videoId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == 'UjepmPtKm0T1hWnUeXz72twzTcG2';
     }
   }
 }
