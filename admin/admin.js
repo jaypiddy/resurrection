@@ -283,15 +283,25 @@ async function loadAgencies() {
       const div = document.createElement('div');
       div.className = 'agency-card';
       
+      const sanitizeHTML = (str) => {
+        const temp = document.createElement('div');
+        temp.textContent = str;
+        return temp.innerHTML;
+      };
+      
+      const safeName = sanitizeHTML(data.agencyName);
+      const safeSlug = sanitizeHTML(data.slug);
+      const safePath = sanitizeHTML(data.videoPath || '');
+      
       div.innerHTML = `
         <div>
-          <h4 style="margin: 0; padding: 0;">${data.agencyName}</h4>
-          <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #525252;">/${data.slug}</p>
+          <h4 style="margin: 0; padding: 0;">${safeName}</h4>
+          <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #525252;">/${safeSlug}</p>
         </div>
         <div style="display: flex; gap: 1rem;">
-          <a href="/${data.slug}" target="_blank" class="bx--btn bx--btn--sm bx--btn--ghost">View Site</a>
-          <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${data.slug}">Edit</button>
-          <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${data.slug}" data-path="${data.videoPath || ''}">Delete</button>
+          <a href="/${safeSlug}" target="_blank" class="bx--btn bx--btn--sm bx--btn--ghost">View Site</a>
+          <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${safeSlug}">Edit</button>
+          <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${safeSlug}" data-path="${safePath}">Delete</button>
         </div>
       `;
       agenciesList.appendChild(div);

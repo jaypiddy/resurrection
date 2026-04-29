@@ -483,8 +483,13 @@ const videoControls = document.querySelector('.video-controls');
 
 // Fade controls on mouse inactivity
 let inactivityTimer;
+let isThrottled = false;
 
 function resetInactivityTimer() {
+  if (isThrottled) return;
+  isThrottled = true;
+  setTimeout(() => isThrottled = false, 200);
+
   if (videoControls) {
     videoControls.classList.remove('faded');
   }

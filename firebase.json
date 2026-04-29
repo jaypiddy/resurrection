@@ -3,6 +3,11 @@
     "public": ".",
     "ignore": [
       "firebase.json",
+      "firestore.rules",
+      "storage.rules",
+      "skills-lock.json",
+      "check_site.js",
+      "README.md",
       "**/.*",
       "**/node_modules/**"
     ],
