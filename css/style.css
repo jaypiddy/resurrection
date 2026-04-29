@@ -622,9 +622,9 @@ body {
 }
 
 .modal-logo {
-  height: 50px;
+  height: 42.5px;
   width: auto;
-  margin-top: 20px;
+  margin: 20px auto 0;
   display: block;
   color: var(--accent-color);
 }
