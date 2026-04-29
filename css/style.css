@@ -573,6 +573,7 @@ body {
 .modal-container.active {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .modal-close-btn {
