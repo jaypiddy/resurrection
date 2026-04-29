@@ -462,36 +462,40 @@ const enableAudio = () => {
   document.addEventListener(event, enableAudio);
 });
 
-// Start Loading
-window.addEventListener('load', async () => {
+// Start Loading immediately instead of waiting for external assets
+document.addEventListener('DOMContentLoaded', async () => {
   // Check for dynamic agency route
   const path = window.location.pathname.replace(/^\/|\/$/g, ''); // strip slashes
   if (path && path !== 'admin' && path !== 'index.html') {
-    const agencyData = await getAgencyData(path);
-    if (agencyData) {
-      // Update DOM
-      const agencyDisplay = document.getElementById('agency-name-display');
-      if (agencyDisplay && agencyData.agencyName) {
-        agencyDisplay.textContent = `HELLO ${agencyData.agencyName.toUpperCase()}.`;
-      }
-      
-      // Update Reveal Video Data Src
-      if (agencyData.videoUrl) {
-        const revealVideo = document.getElementById('reveal-video');
-        revealVideo.innerHTML = ''; // clear existing static sources
-        const newSource = document.createElement('source');
-        newSource.dataset.src = agencyData.videoUrl;
-        newSource.type = agencyData.videoUrl.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
-                revealVideo.appendChild(newSource);
-        
-        // Update stored main sources so main play button works
-        if (typeof mainVideoSrcs !== 'undefined') {
-          mainVideoSrcs = revealVideo.innerHTML;
+    try {
+      const agencyData = await getAgencyData(path);
+      if (agencyData) {
+        // Update DOM
+        const agencyDisplay = document.getElementById('agency-name-display');
+        if (agencyDisplay && agencyData.agencyName) {
+          agencyDisplay.textContent = `HELLO ${agencyData.agencyName.toUpperCase()}.`;
         }
+        
+        // Update Reveal Video Data Src
+        if (agencyData.videoUrl) {
+          const revealVideo = document.getElementById('reveal-video');
+          revealVideo.innerHTML = ''; // clear existing static sources
+          const newSource = document.createElement('source');
+          newSource.dataset.src = agencyData.videoUrl;
+          newSource.type = agencyData.videoUrl.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
+                  revealVideo.appendChild(newSource);
+          
+          // Update stored main sources so main play button works
+          if (typeof mainVideoSrcs !== 'undefined') {
+            mainVideoSrcs = revealVideo.innerHTML;
+          }
+        }
+      } else {
+        // If a path was provided but no agency found, fallback gracefully or update UI
+        console.log("No custom agency data found for this slug.");
       }
-    } else {
-      // If a path was provided but no agency found, fallback gracefully or update UI
-      console.log("No custom agency data found for this slug.");
+    } catch (error) {
+      console.warn("Failed to fetch agency data, falling back to default.", error);
     }
   }
 
