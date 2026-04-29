@@ -78,7 +78,7 @@ if (waterAudio) waterAudio.muted = bgAudio.muted;
 const padZero = (num) => num.toString().padStart(3, '0');
 
 // Generate image path
-const getFramePath = (index) => `Public/Header Image Sequence/PS Studios Spring 2026 Agency CampaignHeader Sequence${padZero(index)}.webp`;
+const getFramePath = (index) => `Public/Header Image Sequence/PS Studios Spring 2026 Agency CampaignHeader Sequence${padZero(index)}.jpg`;
 
 
 

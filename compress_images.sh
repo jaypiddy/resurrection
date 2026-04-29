@@ -12,13 +12,13 @@ for file in "$DIR"/*.png; do
     # Get the base filename without extension
     filename=$(basename "$file" .png)
     
-    # Convert to webp with 80% quality (good balance of size/quality)
-    # macOS sips command supports webp out of the box on modern versions
-    sips -s format webp -s formatOptions 80 "$file" --out "$DIR/$filename.webp" > /dev/null 2>&1
+    # Convert to JPEG with 60% quality (good balance of size/quality)
+    # macOS sips command supports writing JPEG reliably
+    sips -s format jpeg -s formatOptions 60 "$file" --out "$DIR/$filename.jpg" > /dev/null 2>&1
     
-    echo "Compressed: $filename.webp"
+    echo "Compressed: $filename.jpg"
   fi
 done
 
 echo "Compression complete!"
-echo "Note: The original .png files are still there. Once you verify the .webp files work in the browser, you can safely delete the .png files to save space."
+echo "Note: The original .png files are still there. Once you verify the .jpg files work in the browser, you can safely delete the .png files to save space."
