@@ -315,7 +315,7 @@
         <p>Ready to resurrect your big ideas? Reach out below.</p>
         <p>New to generative AI filmmaking? Let us know and we'll send you a free information pack on workflows, pipelines, and how to estimate for your projects.</p>
         
-        <form id="contact-form" class="contact-form">
+        <form id="contact-form" class="contact-form" onsubmit="handleContactSubmit(event)">
           <div class="form-group">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" data-fs-field required />
@@ -334,7 +334,7 @@
             <span class="fs-error" data-fs-error="message"></span>
           </div>
 
-          <button type="button" id="submit-btn" class="submit-btn">Send Message</button>
+          <button type="submit" id="submit-btn" class="submit-btn">Send Message</button>
         </form>
       </div>
     </div> <!-- Close text-modal-container -->
