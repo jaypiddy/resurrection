@@ -625,7 +625,7 @@ if (contactForm) {
       
       if (res.ok) {
         contactForm.innerHTML = `
-          <div style="text-align: center; padding: 2rem 0; color: #fff;">
+          <div style="text-align: left; padding: 2rem 0; color: #fff;">
             <svg style="width: 50px; height: 50px; margin-bottom: 15px; color: #4CAF50;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <h3 style="font-family: var(--font-primary); font-size: 24px; margin-bottom: 10px;">Thank you!</h3>
             <p style="color: #999;">Your message has been sent successfully. We will be in touch shortly.</p>
