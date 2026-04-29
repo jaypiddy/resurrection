@@ -605,16 +605,21 @@ updateVolumeUI();
 
 // --- 11. Contact Form Submission ---
 const contactForm = document.getElementById('contact-form');
-if (contactForm) {
-  contactForm.addEventListener('submit', async (e) => {
+const submitBtn = document.getElementById('submit-btn');
+
+if (contactForm && submitBtn) {
+  submitBtn.addEventListener('click', async (e) => {
     e.preventDefault();
-    const formData = new FormData(contactForm);
-    const submitBtn = contactForm.querySelector('button[type="submit"]');
     
-    if (submitBtn) {
-      submitBtn.textContent = 'Sending...';
-      submitBtn.disabled = true;
+    // Trigger native HTML5 validation
+    if (!contactForm.reportValidity()) {
+      return; // Stop if the form is invalid
     }
+    
+    const formData = new FormData(contactForm);
+    
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
     
     try {
       const res = await fetch('https://formspree.io/f/xzdynvng', {
@@ -637,10 +642,8 @@ if (contactForm) {
     } catch (err) {
       console.error(err);
       alert('There was a problem sending your message. Please try again.');
-      if (submitBtn) {
-        submitBtn.textContent = 'Send Message';
-        submitBtn.disabled = false;
-      }
+      submitBtn.textContent = 'Send Message';
+      submitBtn.disabled = false;
     }
   });
 }
