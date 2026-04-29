@@ -196,55 +196,89 @@ function setupAnimations() {
     }
   });
 
-  // Frame Sequence Mapping
-  ScrollTrigger.create({
-    trigger: scrollContainer,
-    start: "top top",
-    end: "bottom bottom",
-    scrub: 1.5, // Smooth scrubbing
-    onUpdate: (self) => {
-      // Map scroll progress (0 to 1) to frame index (0 to 201)
-      const index = Math.min(Math.floor(self.progress * FRAME_COUNT), FRAME_COUNT - 1);
-      
-      if (index !== currentFrame) {
-        currentFrame = index;
-        requestAnimationFrame(() => drawFrame(currentFrame));
-      }
-      
-      // Reveal Video Section at the very end
-      if (self.progress > 0.99) {
-        if (isAudioPlaying && !bgAudio.paused) bgAudio.pause();
-        if (isAudioPlaying && waterAudio && waterAudio.paused && userHasInteracted && !videoContainer.classList.contains('active')) {
-          waterAudio.play().catch(e => {});
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: scrollContainer,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 1.5, // Smooth scrubbing
+      onUpdate: (self) => {
+        // Manage audio and pointer events manually based on overall progress
+        if (self.progress > 0.95) {
+          if (isAudioPlaying && !bgAudio.paused) bgAudio.pause();
+          if (isAudioPlaying && waterAudio && waterAudio.paused && userHasInteracted && !videoContainer.classList.contains('active')) {
+            waterAudio.play().catch(e => {});
+          }
+          videoSection.style.pointerEvents = 'auto';
+          footerBar.style.opacity = '0';
+          footerBar.style.pointerEvents = 'none';
+          
+          if (videoContainer.classList.contains('active') && videoWasPlayingOnScroll) {
+            revealVideo.play();
+            videoWasPlayingOnScroll = false;
+          }
+        } else {
+          if (isAudioPlaying && bgAudio.paused && userHasInteracted) bgAudio.play().catch(e => {});
+          if (waterAudio && !waterAudio.paused) waterAudio.pause();
+          
+          if (videoContainer.classList.contains('active') && !revealVideo.paused) {
+            revealVideo.pause();
+            videoWasPlayingOnScroll = true;
+          }
+          videoSection.style.pointerEvents = 'none';
+          footerBar.style.opacity = '1';
         }
-        
-        videoSection.style.opacity = '1';
-        videoSection.style.pointerEvents = 'auto';
-        footerBar.style.opacity = '0';
-        footerBar.style.pointerEvents = 'none';
-        
-        // Unpause video if we scrolled back into view
-        if (videoContainer.classList.contains('active') && videoWasPlayingOnScroll) {
-          revealVideo.play();
-          videoWasPlayingOnScroll = false;
-        }
-      } else {
-        if (isAudioPlaying && bgAudio.paused && userHasInteracted) bgAudio.play().catch(e => {});
-        if (waterAudio && !waterAudio.paused) waterAudio.pause();
-        
-        // Pause video if scrolling away
-        if (videoContainer.classList.contains('active') && !revealVideo.paused) {
-          revealVideo.pause();
-          videoWasPlayingOnScroll = true;
-        }
-
-        videoSection.style.opacity = '0';
-        videoSection.style.pointerEvents = 'none';
-        footerBar.style.opacity = '1';
-        footerBar.style.pointerEvents = 'none'; // Will let CSS handle the pointer-events auto for children
       }
     }
   });
+
+  // Phase 1: Canvas Sequence
+  const seqObj = { frame: 0 };
+  tl.to(seqObj, {
+    frame: FRAME_COUNT - 1,
+    snap: "frame",
+    ease: "none",
+    duration: 5,
+    onUpdate: () => {
+      if (seqObj.frame !== currentFrame) {
+        currentFrame = seqObj.frame;
+        drawFrame(currentFrame);
+      }
+    }
+  }, 0);
+
+  // Fade out canvas wrap
+  tl.to('.canvas-wrap', { opacity: 0, duration: 0.5 }, 5.0);
+
+  // Phase 2: Epitaph Scroll Sequence
+  const paragraphs = gsap.utils.toArray('.epitaph-content p');
+  
+  // Fade in the section container
+  tl.to('#epitaph-section', { opacity: 1, duration: 0.5 }, 5.5);
+  
+  // Stagger paragraph fade-in (simulating reading line-by-line)
+  tl.fromTo(paragraphs, 
+    { opacity: 0, y: 50 }, 
+    { opacity: 1, y: 0, duration: 1, stagger: 0.5, ease: "none" }, 
+    5.5
+  );
+  
+  // Slowly translate the entire block upwards while reading
+  tl.fromTo('.epitaph-content', 
+    { y: 50 }, 
+    { y: -100, duration: 3.0, ease: "none" }, 
+    5.5
+  );
+
+  // Fade out Epitaph section
+  tl.to('#epitaph-section', { opacity: 0, duration: 0.5 }, 8.5);
+
+  // Phase 3: Mausoleum Scene Fades In
+  tl.fromTo('#video-section', 
+    { opacity: 0 }, 
+    { opacity: 1, duration: 0.5 }, 
+    9.0
+  );
 }
 
 // --- 7. Video Interaction ---
