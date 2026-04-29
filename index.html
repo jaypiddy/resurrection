@@ -315,7 +315,7 @@
         <p>Ready to resurrect your big ideas? Reach out below.</p>
         <p>New to generative AI filmmaking? Let us know and we'll send you a free information pack on workflows, pipelines, and how to estimate for your projects.</p>
         
-        <form id="contact-form" class="contact-form" onsubmit="handleContactSubmit(event)">
+        <form id="contact-form" class="contact-form">
           <div class="form-group">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" data-fs-field required />
@@ -336,6 +336,33 @@
 
           <button type="submit" id="submit-btn" class="submit-btn">Send Message</button>
         </form>
+        
+        <!-- Bulletproof Form Submission Script -->
+        <script>
+          document.getElementById('contact-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+            try {
+              const res = await fetch('https://formspree.io/f/xzdynvng', {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'Accept': 'application/json' }
+              });
+              if (res.ok) {
+                this.innerHTML = '<div style="text-align: left; padding: 2rem 0; color: #fff;"><svg style="width: 50px; height: 50px; margin-bottom: 15px; color: #4CAF50;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><h3 style="font-family: var(--font-primary); font-size: 24px; margin-bottom: 10px;">Thank you!</h3><p style="color: #999;">Your message has been sent successfully. We will be in touch shortly.</p></div>';
+              } else {
+                throw new Error('Formspree returned an error');
+              }
+            } catch (err) {
+              console.error(err);
+              alert('There was a problem sending your message. Please try again.');
+              btn.textContent = 'Send Message';
+              btn.disabled = false;
+            }
+          });
+        </script>
       </div>
     </div> <!-- Close text-modal-container -->
 
