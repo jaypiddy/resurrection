@@ -203,12 +203,19 @@ function setupAnimations() {
       end: "bottom bottom",
       scrub: 1.5, // Smooth scrubbing
       onUpdate: (self) => {
-        // Manage audio and pointer events manually based on overall progress
-        if (self.progress > 0.95) {
+        // Audio transition at ~55% (entering the dark/Epitaph phase)
+        if (self.progress > 0.55) {
           if (isAudioPlaying && !bgAudio.paused) bgAudio.pause();
           if (isAudioPlaying && waterAudio && waterAudio.paused && userHasInteracted && !videoContainer.classList.contains('active')) {
             waterAudio.play().catch(e => {});
           }
+        } else {
+          if (isAudioPlaying && bgAudio.paused && userHasInteracted) bgAudio.play().catch(e => {});
+          if (waterAudio && !waterAudio.paused) waterAudio.pause();
+        }
+
+        // Pointer events and UI transition at ~95% (Mausoleum fully visible)
+        if (self.progress > 0.95) {
           videoSection.style.pointerEvents = 'auto';
           footerBar.style.opacity = '0';
           footerBar.style.pointerEvents = 'none';
@@ -218,9 +225,6 @@ function setupAnimations() {
             videoWasPlayingOnScroll = false;
           }
         } else {
-          if (isAudioPlaying && bgAudio.paused && userHasInteracted) bgAudio.play().catch(e => {});
-          if (waterAudio && !waterAudio.paused) waterAudio.pause();
-          
           if (videoContainer.classList.contains('active') && !revealVideo.paused) {
             revealVideo.pause();
             videoWasPlayingOnScroll = true;
