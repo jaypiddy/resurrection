@@ -1,5 +1,29 @@
 import { getAgencyData } from './firebase-client.js';
 
+// --- Cloudflare Stream Config ---
+// IMPORTANT: Replace this with your actual customer subdomain from the Cloudflare Dashboard
+// Example: 'customer-m033sqmoxxxxxxx.cloudflarestream.com'
+const CF_STREAM_DOMAIN = 'customer-xv1aafyshr3tbknu.cloudflarestream.com'; 
+
+const LOADER_VIDEO_ID = '405467bd819441a2fbbc65e3b6ba268b'; // Crow_Loop
+const MAIN_VIDEO_ID = 'ab9e6e67d24333ba7432ed40a7be5ede';   // PSi Studios TO Campaign 3
+const REEL_VIDEO_ID = '5442fab995851e59c1c965023f4f28bc';   // PS_SIZZLE_NEW_MUSIC
+
+function loadCloudflareVideo(videoElement, videoId) {
+  if (videoId === 'CUSTOM_URL') return; // Skip if it's a fallback direct URL
+  
+  const source = `https://${CF_STREAM_DOMAIN}/${videoId}/manifest/video.m3u8`;
+  
+  if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(source);
+    hls.attachMedia(videoElement);
+    videoElement._hls = hls;
+  } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+    // Native HLS support (Safari/iOS)
+    videoElement.src = source;
+  }
+}
 // --- 1. Lenis Smooth Scroll Setup ---
 const lenis = new Lenis({
   duration: 1.5,
@@ -166,6 +190,7 @@ function initExperience() {
         needsRevealLoad = true;
       }
     });
+    // HLS logic handles loading, only call this if we have static sources left
     if (needsRevealLoad) revealVideo.load();
 
   }, 800);
@@ -294,9 +319,9 @@ const videoLogoSvg = document.querySelector('.video-logo-svg');
 const stoneBtns = document.querySelectorAll('.stone-btn');
 const showReelBtn = document.getElementById('show-reel-btn');
 
-let mainVideoSrcs = revealVideo.innerHTML;
+let currentVideoId = MAIN_VIDEO_ID;
 
-function openVideoPlayer(customSrc = null) {
+function openVideoPlayer(customVideoId = null) {
   // Stop background rain audio
   if (!bgAudio.paused) {
     bgAudio.pause();
@@ -306,19 +331,21 @@ function openVideoPlayer(customSrc = null) {
     waterAudio.pause();
   }
   
-  if (customSrc) {
-    revealVideo.src = customSrc;
-  } else {
-    // If returning to main video, remove src attribute and use sources
-    revealVideo.removeAttribute('src');
-    revealVideo.innerHTML = mainVideoSrcs;
-    const sources = revealVideo.querySelectorAll('source');
-    sources.forEach(s => {
-      if (s.dataset.src) s.src = s.dataset.src;
-    });
+  const targetId = customVideoId || MAIN_VIDEO_ID;
+  
+  // If we are switching videos or haven't loaded yet
+  if (currentVideoId !== targetId || !revealVideo.src) {
+    if (revealVideo._hls) {
+      revealVideo._hls.destroy();
+    }
+    loadCloudflareVideo(revealVideo, targetId);
+    currentVideoId = targetId;
   }
   
-  revealVideo.load();
+  // For native HLS, sometimes load is required after src change
+  if (revealVideo.src && !revealVideo._hls) {
+    revealVideo.load();
+  }
   
   // Call play synchronously to preserve user gesture
   const playPromise = revealVideo.play();
@@ -341,7 +368,7 @@ playBtn.addEventListener('click', () => {
 if (showReelBtn) {
 
   showReelBtn.addEventListener('click', () => {
-    openVideoPlayer('Public/PS_SIZZLE_NEW_MUSIC.mp4');
+    openVideoPlayer(REEL_VIDEO_ID);
   });
 }
 
@@ -468,6 +495,12 @@ const enableAudio = () => {
 
 // Start Loading immediately instead of waiting for external assets
 document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize Preloader Video immediately
+  const loaderVideo = document.getElementById('loader-video');
+  if (loaderVideo) {
+    loadCloudflareVideo(loaderVideo, LOADER_VIDEO_ID);
+  }
+
   // Check for dynamic agency route
   const path = window.location.pathname.replace(/^\/|\/$/g, ''); // strip slashes
   if (path && path !== 'admin' && path !== 'index.html') {
@@ -482,16 +515,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Update Reveal Video Data Src
         if (agencyData.videoUrl) {
-          const revealVideo = document.getElementById('reveal-video');
-          revealVideo.innerHTML = ''; // clear existing static sources
-          const newSource = document.createElement('source');
-          newSource.dataset.src = agencyData.videoUrl;
-          newSource.type = agencyData.videoUrl.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
-                  revealVideo.appendChild(newSource);
-          
-          // Update stored main sources so main play button works
-          if (typeof mainVideoSrcs !== 'undefined') {
-            mainVideoSrcs = revealVideo.innerHTML;
+          if (agencyData.videoUrl.includes('http')) {
+            // Fallback for custom full URL provided in Firebase
+            revealVideo.src = agencyData.videoUrl;
+            currentVideoId = 'CUSTOM_URL';
+          } else {
+            // Assume it's a Cloudflare Stream ID
+            currentVideoId = agencyData.videoUrl;
+            loadCloudflareVideo(revealVideo, currentVideoId);
           }
         }
       } else {
