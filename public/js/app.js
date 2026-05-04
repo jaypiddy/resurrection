@@ -242,8 +242,6 @@ function setupAnimations() {
         // Pointer events and UI transition at ~95% (Mausoleum fully visible)
         if (self.progress > 0.95) {
           videoSection.style.pointerEvents = 'auto';
-          footerBar.style.opacity = '0';
-          footerBar.style.pointerEvents = 'none';
           
           if (videoContainer.classList.contains('active') && videoWasPlayingOnScroll) {
             revealVideo.play();
@@ -255,7 +253,6 @@ function setupAnimations() {
             videoWasPlayingOnScroll = true;
           }
           videoSection.style.pointerEvents = 'none';
-          footerBar.style.opacity = '1';
         }
       }
     }
@@ -331,6 +328,10 @@ function openVideoPlayer(customVideoId = null) {
     waterAudio.pause();
   }
   
+  // Hide footer while video is playing
+  footerBar.style.opacity = '0';
+  footerBar.style.pointerEvents = 'none';
+  
   const targetId = customVideoId || MAIN_VIDEO_ID;
   
   // If we are switching videos or haven't loaded yet
@@ -380,6 +381,10 @@ closeVideoBtn.addEventListener('click', () => {
     waterAudio.play().catch(e => {});
   }
   if (typeof lenis !== 'undefined') lenis.start();
+  
+  // Bring back footer
+  footerBar.style.opacity = '1';
+  footerBar.style.pointerEvents = '';
   
   // Bring back play button, logo, and secondary actions
   setTimeout(() => {
