@@ -3,11 +3,11 @@ import { getAgencyData } from './firebase-client.js';
 // --- Cloudflare Stream Config ---
 // IMPORTANT: Replace this with your actual customer subdomain from the Cloudflare Dashboard
 // Example: 'customer-m033sqmoxxxxxxx.cloudflarestream.com'
-const CF_STREAM_DOMAIN = 'customer-xv1aafyshr3tbknu.cloudflarestream.com'; 
+let CF_STREAM_DOMAIN = 'customer-xv1aafyshr3tbknu.cloudflarestream.com'; 
 
-const LOADER_VIDEO_ID = '405467bd819441a2fbbc65e3b6ba268b'; // Crow_Loop
-const MAIN_VIDEO_ID = 'ab9e6e67d24333ba7432ed40a7be5ede';   // PSi Studios TO Campaign 3
-const REEL_VIDEO_ID = '5442fab995851e59c1c965023f4f28bc';   // PS_SIZZLE_NEW_MUSIC
+let LOADER_VIDEO_ID = '405467bd819441a2fbbc65e3b6ba268b'; // Crow_Loop
+let MAIN_VIDEO_ID = 'ab9e6e67d24333ba7432ed40a7be5ede';   // PSi Studios TO Campaign 3
+let REEL_VIDEO_ID = '5442fab995851e59c1c965023f4f28bc';   // PS_SIZZLE_NEW_MUSIC
 
 function loadCloudflareVideo(videoElement, videoId) {
   if (videoId === 'CUSTOM_URL') return; // Skip if it's a fallback direct URL
@@ -500,12 +500,6 @@ const enableAudio = () => {
 
 // Start Loading immediately instead of waiting for external assets
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize Preloader Video immediately
-  const loaderVideo = document.getElementById('loader-video');
-  if (loaderVideo) {
-    loadCloudflareVideo(loaderVideo, LOADER_VIDEO_ID);
-  }
-
   // Check for dynamic agency route
   const path = window.location.pathname.replace(/^\/|\/$/g, ''); // strip slashes
   if (path && path !== 'admin' && path !== 'index.html') {
@@ -518,16 +512,19 @@ document.addEventListener('DOMContentLoaded', async () => {
           agencyDisplay.textContent = `HELLO ${agencyData.agencyName.toUpperCase()}.`;
         }
         
-        // Update Reveal Video Data Src
-        if (agencyData.videoUrl) {
+        // Update variables from agency data if they exist
+        if (agencyData.cfStreamDomain) CF_STREAM_DOMAIN = agencyData.cfStreamDomain;
+        if (agencyData.mainVideoId) MAIN_VIDEO_ID = agencyData.mainVideoId;
+        if (agencyData.loaderVideoId) LOADER_VIDEO_ID = agencyData.loaderVideoId;
+        if (agencyData.reelVideoId) REEL_VIDEO_ID = agencyData.reelVideoId;
+
+        // Backward compatibility for legacy videoUrl
+        if (agencyData.videoUrl && !agencyData.mainVideoId) {
           if (agencyData.videoUrl.includes('http')) {
-            // Fallback for custom full URL provided in Firebase
             revealVideo.src = agencyData.videoUrl;
-            currentVideoId = 'CUSTOM_URL';
+            MAIN_VIDEO_ID = 'CUSTOM_URL';
           } else {
-            // Assume it's a Cloudflare Stream ID
-            currentVideoId = agencyData.videoUrl;
-            loadCloudflareVideo(revealVideo, currentVideoId);
+            MAIN_VIDEO_ID = agencyData.videoUrl;
           }
         }
       } else {
@@ -537,6 +534,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
       console.warn("Failed to fetch agency data, falling back to default.", error);
     }
+  }
+
+  // Set the currentVideoId based on possibly updated MAIN_VIDEO_ID
+  currentVideoId = MAIN_VIDEO_ID;
+  if (currentVideoId !== 'CUSTOM_URL' && currentVideoId !== MAIN_VIDEO_ID) {
+     loadCloudflareVideo(revealVideo, currentVideoId);
+  } else if (currentVideoId === MAIN_VIDEO_ID && currentVideoId !== 'CUSTOM_URL') {
+     // Preload the main video
+     loadCloudflareVideo(revealVideo, currentVideoId);
+  }
+
+  // Initialize Preloader Video after variables are potentially updated
+  const loaderVideo = document.getElementById('loader-video');
+  if (loaderVideo) {
+    loadCloudflareVideo(loaderVideo, LOADER_VIDEO_ID);
   }
 
   loadImages();

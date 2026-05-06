@@ -22,21 +22,17 @@ const noAgencies = document.getElementById('no-agencies');
 
 const agencyNameInput = document.getElementById('agency-name');
 const agencySlugInput = document.getElementById('agency-slug');
-const videoFileInput = document.getElementById('video-file');
-const fileNameDisplay = document.getElementById('file-name-display');
+const cfStreamDomainInput = document.getElementById('cf-stream-domain');
+const loaderVideoIdInput = document.getElementById('loader-video-id');
+const mainVideoIdInput = document.getElementById('main-video-id');
+const reelVideoIdInput = document.getElementById('reel-video-id');
 
 const saveAgencyBtn = document.getElementById('save-agency-btn');
 const cancelCreateBtn = document.getElementById('cancel-create-btn');
 const createError = document.getElementById('create-error');
 
-const progressContainer = document.getElementById('upload-progress-container');
-const progressBar = document.getElementById('upload-progress');
-const progressText = document.getElementById('progress-text');
-
 const formHeading = document.getElementById('form-heading');
-const currentVideoDisplay = document.getElementById('current-video-display');
 
-let selectedFile = null;
 let editingAgencyData = null;
 
 // Initialize
@@ -89,13 +85,12 @@ function showCreate() {
   agencyNameInput.value = '';
   agencySlugInput.value = '';
   agencySlugInput.disabled = false;
-  videoFileInput.value = '';
-  selectedFile = null;
+  cfStreamDomainInput.value = '';
+  loaderVideoIdInput.value = '';
+  mainVideoIdInput.value = '';
+  reelVideoIdInput.value = '';
   editingAgencyData = null;
-  fileNameDisplay.textContent = "No file selected";
-  currentVideoDisplay.classList.add('hidden');
   createError.classList.add('hidden');
-  progressContainer.classList.add('hidden');
   
   // Auto-slug generation
   agencyNameInput.addEventListener('input', autoSlugGenerator);
@@ -119,20 +114,33 @@ function showEdit(data) {
   agencySlugInput.disabled = true;
   agencyNameInput.removeEventListener('input', autoSlugGenerator);
   
-  videoFileInput.value = '';
-  selectedFile = null;
+  cfStreamDomainInput.value = data.cfStreamDomain || '';
+  loaderVideoIdInput.value = data.loaderVideoId || '';
+  mainVideoIdInput.value = data.mainVideoId || '';
+  reelVideoIdInput.value = data.reelVideoId || '';
+
   editingAgencyData = data;
-  fileNameDisplay.textContent = "Leave empty to keep current video";
-  
-  if (data.videoPath) {
-    currentVideoDisplay.textContent = `Current Video: ${data.videoPath}`;
-    currentVideoDisplay.classList.remove('hidden');
-  } else {
-    currentVideoDisplay.classList.add('hidden');
-  }
-  
   createError.classList.add('hidden');
-  progressContainer.classList.add('hidden');
+}
+
+function showDuplicate(data) {
+  loginContainer.classList.add('hidden');
+  dashboardContainer.classList.add('hidden');
+  createContainer.classList.remove('hidden');
+  
+  formHeading.textContent = `Duplicate Agency: ${data.agencyName}`;
+  agencyNameInput.value = '';
+  agencySlugInput.value = '';
+  agencySlugInput.disabled = false;
+  agencyNameInput.addEventListener('input', autoSlugGenerator);
+  
+  cfStreamDomainInput.value = data.cfStreamDomain || '';
+  loaderVideoIdInput.value = data.loaderVideoId || '';
+  mainVideoIdInput.value = data.mainVideoId || '';
+  reelVideoIdInput.value = data.reelVideoId || '';
+
+  editingAgencyData = null; // Important: Treat this as a new record
+  createError.classList.add('hidden');
 }
 
 // Auth Logic
@@ -162,16 +170,7 @@ logoutBtn.addEventListener('click', () => {
   signOut(auth);
 });
 
-// File Selection
-videoFileInput.addEventListener('change', (e) => {
-  if (e.target.files.length > 0) {
-    selectedFile = e.target.files[0];
-    fileNameDisplay.textContent = selectedFile.name;
-  } else {
-    selectedFile = null;
-    fileNameDisplay.textContent = "No file selected";
-  }
-});
+
 
 // Create Logic
 showCreateBtn.addEventListener('click', showCreate);
@@ -189,80 +188,40 @@ saveAgencyBtn.addEventListener('click', async () => {
     return;
   }
   
-  if (!editingAgencyData && !selectedFile) {
-    createError.textContent = "Please select a video file.";
-    createError.classList.remove('hidden');
-    return;
-  }
+  const cfStreamDomain = cfStreamDomainInput.value.trim();
+  const loaderVideoId = loaderVideoIdInput.value.trim();
+  const mainVideoId = mainVideoIdInput.value.trim();
+  const reelVideoId = reelVideoIdInput.value.trim();
   
   saveAgencyBtn.disabled = true;
   cancelCreateBtn.disabled = true;
-  progressContainer.classList.remove('hidden');
   
   try {
-    if (!selectedFile && editingAgencyData) {
-      // Editing without a new video, just update the document
-      await updateDoc(doc(db, "agencies", slug), {
-        agencyName: name
-      });
-      saveAgencyBtn.disabled = false;
-      cancelCreateBtn.disabled = false;
-      showDashboard();
-      return;
-    }
+    const payload = {
+      agencyName: name,
+      cfStreamDomain: cfStreamDomain || null,
+      loaderVideoId: loaderVideoId || null,
+      mainVideoId: mainVideoId || null,
+      reelVideoId: reelVideoId || null,
+    };
 
-    // 1. Upload Video
-    const storageRef = ref(storage, `agency-videos/${slug}_${selectedFile.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+    if (editingAgencyData) {
+      await updateDoc(doc(db, "agencies", slug), payload);
+    } else {
+      payload.slug = slug;
+      payload.createdAt = new Date().toISOString();
+      await setDoc(doc(db, "agencies", slug), payload);
+    }
     
-    uploadTask.on('state_changed', 
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        progressBar.value = progress;
-        progressText.textContent = `Uploading Video... ${Math.round(progress)}%`;
-      }, 
-      (error) => {
-        throw error;
-      }, 
-      async () => {
-        // 2. Get URL and Save to Firestore
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        
-        if (editingAgencyData) {
-          // Update existing
-          await updateDoc(doc(db, "agencies", slug), {
-            agencyName: name,
-            videoUrl: downloadURL,
-            videoPath: storageRef.fullPath
-          });
-          
-          // Optionally delete old video
-          if (editingAgencyData.videoPath && editingAgencyData.videoPath !== storageRef.fullPath) {
-            await deleteObject(ref(storage, editingAgencyData.videoPath)).catch(err => console.warn("Could not delete old video:", err));
-          }
-        } else {
-          // Create new
-          await setDoc(doc(db, "agencies", slug), {
-            agencyName: name,
-            slug: slug,
-            videoUrl: downloadURL,
-            videoPath: storageRef.fullPath,
-            createdAt: new Date().toISOString()
-          });
-        }
-        
-        saveAgencyBtn.disabled = false;
-        cancelCreateBtn.disabled = false;
-        showDashboard();
-      }
-    );
+    saveAgencyBtn.disabled = false;
+    cancelCreateBtn.disabled = false;
+    showDashboard();
   } catch (error) {
     console.error("Save Error:", error);
     createError.textContent = error.message;
     createError.classList.remove('hidden');
     saveAgencyBtn.disabled = false;
     cancelCreateBtn.disabled = false;
-    progressContainer.classList.add('hidden');
   }
 });
 
@@ -300,8 +259,9 @@ async function loadAgencies() {
         </div>
         <div style="display: flex; gap: 1rem;">
           <a href="/${safeSlug}" target="_blank" class="bx--btn bx--btn--sm bx--btn--ghost">View Site</a>
+          <button class="bx--btn bx--btn--sm bx--btn--secondary duplicate-btn" data-slug="${safeSlug}">Duplicate</button>
           <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${safeSlug}">Edit</button>
-          <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${safeSlug}" data-path="${safePath}">Delete</button>
+          <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${safeSlug}">Delete</button>
         </div>
       `;
       agenciesList.appendChild(div);
@@ -312,13 +272,8 @@ async function loadAgencies() {
       btn.addEventListener('click', async (e) => {
         if(confirm("Are you sure you want to delete this agency?")) {
           const slug = e.target.dataset.slug;
-          const videoPath = e.target.dataset.path;
-          
           try {
             await deleteDoc(doc(db, "agencies", slug));
-            if (videoPath) {
-              await deleteObject(ref(storage, videoPath)).catch(err => console.warn("Could not delete video:", err));
-            }
             loadAgencies();
           } catch (error) {
             alert("Error deleting: " + error.message);
@@ -336,6 +291,15 @@ async function loadAgencies() {
         const slug = e.target.dataset.slug;
         const data = localAgenciesData[slug];
         if (data) showEdit(data);
+      });
+    });
+
+    // Attach duplicate listeners
+    document.querySelectorAll('.duplicate-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const slug = e.target.dataset.slug;
+        const data = localAgenciesData[slug];
+        if (data) showDuplicate(data);
       });
     });
     
