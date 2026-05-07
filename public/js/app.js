@@ -308,7 +308,12 @@ function setupAnimations() {
   // Phase 3: Mausoleum Scene Fades In
   tl.fromTo('#video-section', 
     { opacity: 0 }, 
-    { opacity: 1, duration: 0.5 }, 
+    { 
+      opacity: 1, 
+      duration: 0.5,
+      onStart: () => document.body.classList.add('in-mausoleum'),
+      onReverseComplete: () => document.body.classList.remove('in-mausoleum')
+    }, 
     9.0
   );
 }

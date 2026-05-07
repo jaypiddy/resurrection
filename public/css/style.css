@@ -908,6 +908,13 @@ body {
     aspect-ratio: 1280 / 2276;
   }
   
+  body.in-mausoleum .footer-text {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+}
+  
   @media (min-aspect-ratio: 1280/2276) {
     .mausoleum-aspect-inner { width: 100vw; height: auto; }
   }
