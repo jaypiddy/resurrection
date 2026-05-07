@@ -215,11 +215,21 @@ saveAgencyBtn.addEventListener('click', async () => {
     return;
   }
   
-  const cfStreamDomain = cfStreamDomainInput.value.trim();
+  const cfStreamDomainRaw = cfStreamDomainInput.value.trim();
   const loaderVideoId = loaderVideoIdInput.value.trim();
   const mainVideoId = mainVideoIdInput.value.trim();
   const reelVideoId = reelVideoIdInput.value.trim();
   
+  let cfStreamDomain = cfStreamDomainRaw;
+  if (cfStreamDomain.startsWith('http')) {
+    try {
+      const url = new URL(cfStreamDomain);
+      cfStreamDomain = url.hostname;
+    } catch (e) {
+      // Ignore invalid URL, save as is
+    }
+  }
+
   saveAgencyBtn.disabled = true;
   cancelCreateBtn.disabled = true;
   
