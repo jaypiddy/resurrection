@@ -879,6 +879,36 @@ body {
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
+  .video-controls {
+    padding: 10px;
+    gap: 8px;
+    width: 95%;
+  }
+
+  .volume-container {
+    padding-left: 10px;
+    margin-left: 5px;
+    gap: 8px;
+  }
+
+  #ctrl-volume {
+    display: none; /* Hide volume slider on mobile, volume is controlled via hardware buttons */
+  }
+
+  .time-display {
+    font-size: 0.7rem;
+  }
+
+  .control-btn {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .control-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
   .hero-logo-svg {
     margin-bottom: 6vh;
   }
