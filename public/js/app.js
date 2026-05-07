@@ -717,6 +717,45 @@ function updateVolumeUI() {
   }
 }
 
+// Fullscreen Toggle
+const ctrlFullscreen = document.getElementById('ctrl-fullscreen');
+const iconFullscreen = document.getElementById('icon-fullscreen');
+const iconFullscreenExit = document.getElementById('icon-fullscreen-exit');
+const videoWrapper = document.getElementById('video-container');
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    if (videoWrapper.requestFullscreen) {
+      videoWrapper.requestFullscreen().catch(err => console.log(err));
+    } else if (videoWrapper.webkitRequestFullscreen) { // Safari
+      videoWrapper.webkitRequestFullscreen().catch(err => console.log(err));
+    } else if (revealVideo.webkitEnterFullscreen) { // iOS Native Fallback
+      revealVideo.webkitEnterFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { // Safari
+      document.webkitExitFullscreen();
+    }
+  }
+}
+
+ctrlFullscreen.addEventListener('click', toggleFullscreen);
+
+function updateFullscreenUI() {
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    iconFullscreen.style.display = 'none';
+    iconFullscreenExit.style.display = 'block';
+  } else {
+    iconFullscreen.style.display = 'block';
+    iconFullscreenExit.style.display = 'none';
+  }
+}
+
+document.addEventListener('fullscreenchange', updateFullscreenUI);
+document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+
 // Ensure video doesn't have default controls and set initial volume
 revealVideo.controls = false;
 revealVideo.volume = 1;
