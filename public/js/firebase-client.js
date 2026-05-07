@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
 let app, db;
 
@@ -35,5 +35,45 @@ export async function getAgencyData(slug) {
   } catch (error) {
     console.error("Error fetching agency data:", error);
     return null;
+  }
+}
+
+// Custom Analytics Tracker
+export async function logAgencyEvent(slug, eventName) {
+  const { db } = await initFirebaseClient();
+  if (!db || !slug) return;
+  try {
+    const docRef = doc(db, "agencies", slug);
+    await updateDoc(docRef, {
+      [`analytics.clicks.${eventName}`]: increment(1)
+    });
+  } catch (error) {
+    console.warn("Error logging event:", error);
+  }
+}
+
+export async function incrementAgencyTime(slug, seconds) {
+  const { db } = await initFirebaseClient();
+  if (!db || !slug) return;
+  try {
+    const docRef = doc(db, "agencies", slug);
+    await updateDoc(docRef, {
+      "analytics.totalTimeSpent": increment(seconds)
+    });
+  } catch (error) {
+    console.warn("Error incrementing time:", error);
+  }
+}
+
+export async function logAgencyPageView(slug) {
+  const { db } = await initFirebaseClient();
+  if (!db || !slug) return;
+  try {
+    const docRef = doc(db, "agencies", slug);
+    await updateDoc(docRef, {
+      "analytics.pageViews": increment(1)
+    });
+  } catch (error) {
+    console.warn("Error logging page view:", error);
   }
 }

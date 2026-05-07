@@ -1,4 +1,6 @@
-import { getAgencyData } from './firebase-client.js';
+import { getAgencyData, logAgencyPageView, incrementAgencyTime, logAgencyEvent } from './firebase-client.js';
+
+let activeAgencySlug = null;
 
 // --- Cloudflare Stream Config ---
 // IMPORTANT: Replace this with your actual customer subdomain from the Cloudflare Dashboard
@@ -363,12 +365,14 @@ function openVideoPlayer(customVideoId = null) {
 
 
 playBtn.addEventListener('click', () => {
+  logAgencyEvent(activeAgencySlug, 'playVideoClicks');
   openVideoPlayer();
 });
 
 if (showReelBtn) {
 
   showReelBtn.addEventListener('click', () => {
+    logAgencyEvent(activeAgencySlug, 'showReelClicks');
     openVideoPlayer(REEL_VIDEO_ID);
   });
 }
@@ -425,18 +429,21 @@ function openTextModal(modalType) {
 
 if (slopFreeBtn) {
   slopFreeBtn.addEventListener('click', () => {
+    logAgencyEvent(activeAgencySlug, 'slopFreeClicks');
     openTextModal('slop');
   });
 }
 
 if (aboutStudioBtn) {
   aboutStudioBtn.addEventListener('click', () => {
+    logAgencyEvent(activeAgencySlug, 'aboutClicks');
     openTextModal('about');
   });
 }
 
 if (contactBtn) {
   contactBtn.addEventListener('click', () => {
+    logAgencyEvent(activeAgencySlug, 'contactClicks');
     openTextModal('contact');
   });
 }
@@ -512,6 +519,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           agencyDisplay.textContent = `HELLO ${agencyData.agencyName.toUpperCase()}.`;
         }
         
+        activeAgencySlug = path;
+        logAgencyPageView(path);
+        
+        // Track time spent (add 10s every 10s)
+        setInterval(() => {
+          incrementAgencyTime(path, 10);
+        }, 10000);
+
         // Update variables from agency data if they exist
         if (agencyData.cfStreamDomain) CF_STREAM_DOMAIN = agencyData.cfStreamDomain;
         if (agencyData.mainVideoId) MAIN_VIDEO_ID = agencyData.mainVideoId;

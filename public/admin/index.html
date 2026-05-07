@@ -176,6 +176,32 @@
       <div class="bx--form__helper-text">Leave blank to use default.</div>
     </div>
     
+    <div id="analytics-section" class="hidden" style="margin-top: 2rem; margin-bottom: 2rem; padding: 1.5rem; background: #262626; border-radius: 4px; border: 1px solid #393939;">
+      <h3 style="margin-bottom: 1rem; border-bottom: 1px solid #393939; padding-bottom: 0.5rem; font-size: 1.2rem;">Analytics Report</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <div style="font-size: 0.875rem; color: #a8a8a8;">Total Page Views</div>
+          <div id="stat-pageviews" style="font-size: 1.5rem; font-weight: bold; color: #ffffff;">0</div>
+        </div>
+        <div>
+          <div style="font-size: 0.875rem; color: #a8a8a8;">Total Time Spent</div>
+          <div id="stat-totaltime" style="font-size: 1.5rem; font-weight: bold; color: #ffffff;">0s</div>
+        </div>
+        <div>
+          <div style="font-size: 0.875rem; color: #a8a8a8;">Avg Time Per View</div>
+          <div id="stat-avgtime" style="font-size: 1.5rem; font-weight: bold; color: #ffffff;">0s</div>
+        </div>
+      </div>
+      <h4 style="font-size: 0.875rem; color: #a8a8a8; margin-bottom: 0.5rem;">Click Interactions</h4>
+      <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.875rem; color: #f4f4f4; line-height: 1.5;">
+        <li>▶ Play Video: <span id="stat-click-play">0</span></li>
+        <li>🎬 Show Reel: <span id="stat-click-reel">0</span></li>
+        <li>🛡️ Slop Free: <span id="stat-click-slop">0</span></li>
+        <li>🏢 About Studio: <span id="stat-click-about">0</span></li>
+        <li>✉️ Contact Us: <span id="stat-click-contact">0</span></li>
+      </ul>
+    </div>
+
     <div id="create-error" class="bx--form-requirement hidden" style="color: #da1e28; margin-bottom: 1rem;"></div>
 
     <div style="display: flex; gap: 1rem; margin-top: 2rem;">

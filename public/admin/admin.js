@@ -34,7 +34,25 @@ const createError = document.getElementById('create-error');
 
 const formHeading = document.getElementById('form-heading');
 
+// Analytics Elements
+const analyticsSection = document.getElementById('analytics-section');
+const statPageviews = document.getElementById('stat-pageviews');
+const statTotaltime = document.getElementById('stat-totaltime');
+const statAvgtime = document.getElementById('stat-avgtime');
+const statClickPlay = document.getElementById('stat-click-play');
+const statClickReel = document.getElementById('stat-click-reel');
+const statClickSlop = document.getElementById('stat-click-slop');
+const statClickAbout = document.getElementById('stat-click-about');
+const statClickContact = document.getElementById('stat-click-contact');
+
 let editingAgencyData = null;
+
+function formatTime(seconds) {
+  if (!seconds) return '0s';
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return m > 0 ? `${m}m ${s}s` : `${s}s`;
+}
 
 // Initialize
 async function init() {
@@ -92,6 +110,7 @@ function showCreate() {
   reelVideoIdInput.value = '';
   editingAgencyData = null;
   createError.classList.add('hidden');
+  analyticsSection.classList.add('hidden');
   
   // Auto-slug generation
   agencyNameInput.addEventListener('input', autoSlugGenerator);
@@ -122,6 +141,27 @@ function showEdit(data) {
 
   editingAgencyData = data;
   createError.classList.add('hidden');
+
+  // Populate Analytics
+  if (data.analytics) {
+    analyticsSection.classList.remove('hidden');
+    const pageViews = data.analytics.pageViews || 0;
+    const totalTime = data.analytics.totalTimeSpent || 0;
+    const avgTime = pageViews > 0 ? totalTime / pageViews : 0;
+    
+    statPageviews.textContent = pageViews;
+    statTotaltime.textContent = formatTime(totalTime);
+    statAvgtime.textContent = formatTime(avgTime);
+    
+    const clicks = data.analytics.clicks || {};
+    statClickPlay.textContent = clicks.playVideoClicks || 0;
+    statClickReel.textContent = clicks.showReelClicks || 0;
+    statClickSlop.textContent = clicks.slopFreeClicks || 0;
+    statClickAbout.textContent = clicks.aboutClicks || 0;
+    statClickContact.textContent = clicks.contactClicks || 0;
+  } else {
+    analyticsSection.classList.add('hidden');
+  }
 }
 
 function showDuplicate(data) {
@@ -142,6 +182,7 @@ function showDuplicate(data) {
 
   editingAgencyData = null; // Important: Treat this as a new record
   createError.classList.add('hidden');
+  analyticsSection.classList.add('hidden');
 }
 
 // Auth Logic
@@ -296,11 +337,11 @@ async function loadAgencies() {
       const safePath = sanitizeHTML(data.videoPath || '');
       
       div.innerHTML = `
-        <div>
-          <h4 style="margin: 0; padding: 0;">${safeName}</h4>
-          <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #525252;">/${safeSlug}</p>
+        <div style="flex: 1 1 auto; min-width: 0; padding-right: 1rem;">
+          <h4 style="margin: 0; padding: 0; word-break: break-word;">${safeName}</h4>
+          <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #525252; word-break: break-all;">/${safeSlug}</p>
         </div>
-        <div style="display: flex; gap: 1rem;">
+        <div style="display: flex; gap: 1rem; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end;">
           <a href="/${safeSlug}" target="_blank" class="bx--btn bx--btn--sm bx--btn--ghost">View Site</a>
           <button class="bx--btn bx--btn--sm bx--btn--secondary duplicate-btn" data-slug="${safeSlug}">Duplicate</button>
           <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${safeSlug}">Edit</button>
