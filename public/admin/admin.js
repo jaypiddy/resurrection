@@ -143,25 +143,22 @@ function showEdit(data) {
   createError.classList.add('hidden');
 
   // Populate Analytics
-  if (data.analytics) {
-    analyticsSection.classList.remove('hidden');
-    const pageViews = data.analytics.pageViews || 0;
-    const totalTime = data.analytics.totalTimeSpent || 0;
-    const avgTime = pageViews > 0 ? totalTime / pageViews : 0;
-    
-    statPageviews.textContent = pageViews;
-    statTotaltime.textContent = formatTime(totalTime);
-    statAvgtime.textContent = formatTime(avgTime);
-    
-    const clicks = data.analytics.clicks || {};
-    statClickPlay.textContent = clicks.playVideoClicks || 0;
-    statClickReel.textContent = clicks.showReelClicks || 0;
-    statClickSlop.textContent = clicks.slopFreeClicks || 0;
-    statClickAbout.textContent = clicks.aboutClicks || 0;
-    statClickContact.textContent = clicks.contactClicks || 0;
-  } else {
-    analyticsSection.classList.add('hidden');
-  }
+  analyticsSection.classList.remove('hidden');
+  const analyticsData = data.analytics || {};
+  const pageViews = analyticsData.pageViews || 0;
+  const totalTime = analyticsData.totalTimeSpent || 0;
+  const avgTime = pageViews > 0 ? totalTime / pageViews : 0;
+  
+  statPageviews.textContent = pageViews;
+  statTotaltime.textContent = formatTime(totalTime);
+  statAvgtime.textContent = formatTime(avgTime);
+  
+  const clicks = analyticsData.clicks || {};
+  statClickPlay.textContent = clicks.playVideoClicks || 0;
+  statClickReel.textContent = clicks.showReelClicks || 0;
+  statClickSlop.textContent = clicks.slopFreeClicks || 0;
+  statClickAbout.textContent = clicks.aboutClicks || 0;
+  statClickContact.textContent = clicks.contactClicks || 0;
 }
 
 function showDuplicate(data) {
