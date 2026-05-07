@@ -898,6 +898,11 @@ body {
 
 /* --- Mobile Layout Overrides --- */
 @media (orientation: portrait), (max-width: 768px) {
+  /* Reduce the overall scroll length on mobile so it doesn't take forever to get through the sequence */
+  #scroll-container {
+    height: 800vh;
+  }
+
   .mausoleum-aspect-inner {
     background-image: url('../Public/Interior_Crypt_Mobile.jpg');
     aspect-ratio: 1280 / 2276;

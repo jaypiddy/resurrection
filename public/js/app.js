@@ -41,6 +41,10 @@ gsap.ticker.add((time) => {
 
 gsap.ticker.lagSmoothing(0);
 
+// Fix for iOS Safari address bar resize jumping
+ScrollTrigger.config({ ignoreMobileResize: true });
+ScrollTrigger.normalizeScroll(true);
+
 // Stop scrolling initially while loading
 lenis.stop();
 
@@ -293,8 +297,8 @@ function setupAnimations() {
   
   // Slowly translate the entire block upwards while reading
   tl.fromTo('.epitaph-content', 
-    { y: 50 }, 
-    { y: -100, duration: 3.0, ease: "none" }, 
+    { y: "5vh" }, 
+    { y: "-30vh", duration: 3.0, ease: "none" }, 
     5.5
   );
 

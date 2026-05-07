@@ -45,6 +45,23 @@ const statClickSlop = document.getElementById('stat-click-slop');
 const statClickAbout = document.getElementById('stat-click-about');
 const statClickContact = document.getElementById('stat-click-contact');
 
+// Tab Elements
+const tabBtnAgencies = document.getElementById('tab-btn-agencies');
+const tabBtnAnalytics = document.getElementById('tab-btn-analytics');
+const tabAgencies = document.getElementById('tab-agencies');
+const tabAnalytics = document.getElementById('tab-analytics');
+
+// Global Analytics Elements
+const globalPageviews = document.getElementById('global-pageviews');
+const globalTotaltime = document.getElementById('global-totaltime');
+const globalAvgtime = document.getElementById('global-avgtime');
+const globalTopAgency = document.getElementById('global-top-agency');
+const globalClickPlay = document.getElementById('global-click-play');
+const globalClickReel = document.getElementById('global-click-reel');
+const globalClickSlop = document.getElementById('global-click-slop');
+const globalClickAbout = document.getElementById('global-click-about');
+const globalClickContact = document.getElementById('global-click-contact');
+
 let editingAgencyData = null;
 
 function formatTime(seconds) {
@@ -237,6 +254,21 @@ logoutBtn.addEventListener('click', () => {
 
 
 
+// Tab Logic
+tabBtnAgencies.addEventListener('click', () => {
+  tabBtnAgencies.className = "bx--btn bx--btn--primary bx--btn--sm";
+  tabBtnAnalytics.className = "bx--btn bx--btn--tertiary bx--btn--sm";
+  tabAgencies.classList.remove('hidden');
+  tabAnalytics.classList.add('hidden');
+});
+
+tabBtnAnalytics.addEventListener('click', () => {
+  tabBtnAnalytics.className = "bx--btn bx--btn--primary bx--btn--sm";
+  tabBtnAgencies.className = "bx--btn bx--btn--tertiary bx--btn--sm";
+  tabAnalytics.classList.remove('hidden');
+  tabAgencies.classList.add('hidden');
+});
+
 // Create Logic
 showCreateBtn.addEventListener('click', showCreate);
 cancelCreateBtn.addEventListener('click', showDashboard);
@@ -318,8 +350,40 @@ async function loadAgencies() {
       return;
     }
     
+    let totalViews = 0;
+    let totalSeconds = 0;
+    let totalPlay = 0;
+    let totalReel = 0;
+    let totalSlop = 0;
+    let totalAbout = 0;
+    let totalContact = 0;
+    
+    let topAgencyName = "N/A";
+    let highestViews = -1;
+    
     querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
+      
+      // Global Analytics Aggregation
+      if (data.analytics) {
+        const views = data.analytics.pageViews || 0;
+        totalViews += views;
+        totalSeconds += data.analytics.totalTimeSpent || 0;
+        
+        if (views > highestViews) {
+          highestViews = views;
+          topAgencyName = data.agencyName || "N/A";
+        }
+        
+        if (data.analytics.clicks) {
+          totalPlay += data.analytics.clicks.playVideoClicks || 0;
+          totalReel += data.analytics.clicks.showReelClicks || 0;
+          totalSlop += data.analytics.clicks.slopFreeClicks || 0;
+          totalAbout += data.analytics.clicks.aboutClicks || 0;
+          totalContact += data.analytics.clicks.contactClicks || 0;
+        }
+      }
+      
       const div = document.createElement('div');
       div.className = 'agency-card';
       
@@ -347,6 +411,18 @@ async function loadAgencies() {
       `;
       agenciesList.appendChild(div);
     });
+    
+    // Populate Global Analytics UI
+    globalPageviews.textContent = totalViews;
+    globalTotaltime.textContent = formatTime(totalSeconds);
+    globalAvgtime.textContent = formatTime(totalViews > 0 ? totalSeconds / totalViews : 0);
+    globalTopAgency.textContent = highestViews > 0 ? topAgencyName : "N/A";
+    
+    globalClickPlay.textContent = totalPlay;
+    globalClickReel.textContent = totalReel;
+    globalClickSlop.textContent = totalSlop;
+    globalClickAbout.textContent = totalAbout;
+    globalClickContact.textContent = totalContact;
     
     // Attach delete listeners
     document.querySelectorAll('.delete-btn').forEach(btn => {
