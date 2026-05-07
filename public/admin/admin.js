@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
 let app, db, storage, auth;
 
@@ -13,6 +13,7 @@ const createContainer = document.getElementById('create-container');
 const emailInput = document.getElementById('email');
 const passwordInput = document.getElementById('password');
 const loginBtn = document.getElementById('login-btn');
+const forgotPasswordBtn = document.getElementById('forgot-password-btn');
 const loginError = document.getElementById('login-error');
 const logoutBtn = document.getElementById('logout-btn');
 
@@ -157,6 +158,32 @@ loginBtn.addEventListener('click', async () => {
     loginError.classList.remove('hidden');
   } finally {
     loginBtn.textContent = "Log In";
+  }
+});
+
+forgotPasswordBtn.addEventListener('click', async () => {
+  const email = emailInput.value;
+  loginError.classList.add('hidden');
+  
+  if (!email) {
+    loginError.textContent = "Please enter your email address above to reset your password.";
+    loginError.style.color = "#da1e28";
+    loginError.classList.remove('hidden');
+    return;
+  }
+  
+  forgotPasswordBtn.textContent = "Sending...";
+  try {
+    await sendPasswordResetEmail(auth, email);
+    loginError.textContent = "Password reset email sent! Check your inbox.";
+    loginError.style.color = "#24a148"; // Success color
+    loginError.classList.remove('hidden');
+  } catch (error) {
+    loginError.textContent = error.message;
+    loginError.style.color = "#da1e28";
+    loginError.classList.remove('hidden');
+  } finally {
+    forgotPasswordBtn.textContent = "Forgot Password?";
   }
 });
 
