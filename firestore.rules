@@ -3,7 +3,9 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /agencies/{agency} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == 'UjepmPtKm0T1hWnUeXz72twzTcG2';
+      allow create, delete: if request.auth != null && request.auth.uid == 'UjepmPtKm0T1hWnUeXz72twzTcG2';
+      allow update: if (request.auth != null && request.auth.uid == 'UjepmPtKm0T1hWnUeXz72twzTcG2') ||
+                    (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['analytics']));
     }
   }
 }
