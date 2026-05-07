@@ -217,7 +217,7 @@ saveAgencyBtn.addEventListener('click', async () => {
   
   const cfStreamDomainRaw = cfStreamDomainInput.value.trim();
   const loaderVideoId = loaderVideoIdInput.value.trim();
-  const mainVideoId = mainVideoIdInput.value.trim();
+  let mainVideoId = mainVideoIdInput.value.trim();
   const reelVideoId = reelVideoIdInput.value.trim();
   
   let cfStreamDomain = cfStreamDomainRaw;
@@ -225,6 +225,12 @@ saveAgencyBtn.addEventListener('click', async () => {
     try {
       const url = new URL(cfStreamDomain);
       cfStreamDomain = url.hostname;
+      
+      // Attempt to extract video ID from the path e.g., /<video_id>/manifest/video.m3u8
+      const pathParts = url.pathname.split('/').filter(Boolean);
+      if (pathParts.length > 0 && !mainVideoId) {
+        mainVideoId = pathParts[0]; // First part of path is the video ID
+      }
     } catch (e) {
       // Ignore invalid URL, save as is
     }
