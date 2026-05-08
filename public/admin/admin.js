@@ -358,6 +358,9 @@ async function loadAgencies() {
     let totalAbout = 0;
     let totalContact = 0;
     
+    let globalVideoMain = { start: 0, time: 0, 25: 0, 50: 0, 75: 0, 100: 0 };
+    let globalVideoReel = { start: 0, time: 0, 25: 0, 50: 0, 75: 0, 100: 0 };
+    
     let topAgencyName = "N/A";
     let highestViews = -1;
     
@@ -382,6 +385,25 @@ async function loadAgencies() {
           totalAbout += data.analytics.clicks.aboutClicks || 0;
           totalContact += data.analytics.clicks.contactClicks || 0;
         }
+        
+        if (data.analytics.video) {
+          if (data.analytics.video.main) {
+            globalVideoMain.start += data.analytics.video.main.start || 0;
+            globalVideoMain.time += data.analytics.video.main.totalWatchTime || 0;
+            globalVideoMain[25] += data.analytics.video.main['25'] || 0;
+            globalVideoMain[50] += data.analytics.video.main['50'] || 0;
+            globalVideoMain[75] += data.analytics.video.main['75'] || 0;
+            globalVideoMain[100] += data.analytics.video.main['100'] || 0;
+          }
+          if (data.analytics.video.reel) {
+            globalVideoReel.start += data.analytics.video.reel.start || 0;
+            globalVideoReel.time += data.analytics.video.reel.totalWatchTime || 0;
+            globalVideoReel[25] += data.analytics.video.reel['25'] || 0;
+            globalVideoReel[50] += data.analytics.video.reel['50'] || 0;
+            globalVideoReel[75] += data.analytics.video.reel['75'] || 0;
+            globalVideoReel[100] += data.analytics.video.reel['100'] || 0;
+          }
+        }
       }
       
       const div = document.createElement('div');
@@ -395,18 +417,46 @@ async function loadAgencies() {
       
       const safeName = sanitizeHTML(data.agencyName);
       const safeSlug = sanitizeHTML(data.slug);
-      const safePath = sanitizeHTML(data.videoPath || '');
+      
+      const vMain = (data.analytics && data.analytics.video && data.analytics.video.main) || {};
+      const vReel = (data.analytics && data.analytics.video && data.analytics.video.reel) || {};
       
       div.innerHTML = `
-        <div style="flex: 1 1 auto; min-width: 0; padding-right: 1rem;">
-          <h4 style="margin: 0; padding: 0; word-break: break-word;">${safeName}</h4>
-          <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #525252; word-break: break-all;">/${safeSlug}</p>
+        <div class="agency-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid #e0e0e0; padding-bottom: 1rem; margin-bottom: 1rem;">
+          <div style="flex: 1 1 auto; min-width: 0; padding-right: 1rem;">
+            <h4 style="margin: 0; padding: 0; word-break: break-word;">${safeName}</h4>
+            <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #525252; word-break: break-all;">/${safeSlug}</p>
+          </div>
+          <div style="display: flex; gap: 1rem; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end;">
+            <a href="/${safeSlug}" target="_blank" class="bx--btn bx--btn--sm bx--btn--ghost">View Site</a>
+            <button class="bx--btn bx--btn--sm bx--btn--secondary duplicate-btn" data-slug="${safeSlug}">Duplicate</button>
+            <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${safeSlug}">Edit</button>
+            <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${safeSlug}">Delete</button>
+          </div>
         </div>
-        <div style="display: flex; gap: 1rem; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end;">
-          <a href="/${safeSlug}" target="_blank" class="bx--btn bx--btn--sm bx--btn--ghost">View Site</a>
-          <button class="bx--btn bx--btn--sm bx--btn--secondary duplicate-btn" data-slug="${safeSlug}">Duplicate</button>
-          <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${safeSlug}">Edit</button>
-          <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${safeSlug}">Delete</button>
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap; width: 100%;">
+          <div style="flex: 1; min-width: 200px;">
+            <h5 style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #161616;">Main Video Metrics</h5>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; font-size: 0.75rem; color: #525252;">
+              <div>Starts: <strong style="color:#161616;">${vMain.start || 0}</strong></div>
+              <div>Time: <strong style="color:#161616;">${formatTime(vMain.totalWatchTime || 0)}</strong></div>
+              <div>25%: <strong style="color:#161616;">${vMain['25'] || 0}</strong></div>
+              <div>50%: <strong style="color:#161616;">${vMain['50'] || 0}</strong></div>
+              <div>75%: <strong style="color:#161616;">${vMain['75'] || 0}</strong></div>
+              <div>100%: <strong style="color:#161616;">${vMain['100'] || 0}</strong></div>
+            </div>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <h5 style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #161616;">Show Reel Metrics</h5>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; font-size: 0.75rem; color: #525252;">
+              <div>Starts: <strong style="color:#161616;">${vReel.start || 0}</strong></div>
+              <div>Time: <strong style="color:#161616;">${formatTime(vReel.totalWatchTime || 0)}</strong></div>
+              <div>25%: <strong style="color:#161616;">${vReel['25'] || 0}</strong></div>
+              <div>50%: <strong style="color:#161616;">${vReel['50'] || 0}</strong></div>
+              <div>75%: <strong style="color:#161616;">${vReel['75'] || 0}</strong></div>
+              <div>100%: <strong style="color:#161616;">${vReel['100'] || 0}</strong></div>
+            </div>
+          </div>
         </div>
       `;
       agenciesList.appendChild(div);
@@ -423,6 +473,23 @@ async function loadAgencies() {
     globalClickSlop.textContent = totalSlop;
     globalClickAbout.textContent = totalAbout;
     globalClickContact.textContent = totalContact;
+    
+    const elGlobalMainStart = document.getElementById('global-video-main-start');
+    if (elGlobalMainStart) {
+      elGlobalMainStart.textContent = globalVideoMain.start;
+      document.getElementById('global-video-main-time').textContent = formatTime(globalVideoMain.time);
+      document.getElementById('global-video-main-25').textContent = globalVideoMain[25];
+      document.getElementById('global-video-main-50').textContent = globalVideoMain[50];
+      document.getElementById('global-video-main-75').textContent = globalVideoMain[75];
+      document.getElementById('global-video-main-100').textContent = globalVideoMain[100];
+
+      document.getElementById('global-video-reel-start').textContent = globalVideoReel.start;
+      document.getElementById('global-video-reel-time').textContent = formatTime(globalVideoReel.time);
+      document.getElementById('global-video-reel-25').textContent = globalVideoReel[25];
+      document.getElementById('global-video-reel-50').textContent = globalVideoReel[50];
+      document.getElementById('global-video-reel-75').textContent = globalVideoReel[75];
+      document.getElementById('global-video-reel-100').textContent = globalVideoReel[100];
+    }
     
     // Attach delete listeners
     document.querySelectorAll('.delete-btn').forEach(btn => {

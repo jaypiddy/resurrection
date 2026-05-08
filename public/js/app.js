@@ -1,4 +1,4 @@
-import { getAgencyData, logAgencyPageView, incrementAgencyTime, logAgencyEvent } from './firebase-client.js';
+import { getAgencyData, logAgencyPageView, incrementAgencyTime, logAgencyEvent, logVideoEvent, incrementVideoWatchTime } from './firebase-client.js';
 
 let activeAgencySlug = null;
 
@@ -328,8 +328,24 @@ const stoneBtns = document.querySelectorAll('.stone-btn');
 const showReelBtn = document.getElementById('show-reel-btn');
 
 let currentVideoId = MAIN_VIDEO_ID;
+let currentVideoType = 'main'; // 'main' or 'reel'
 
-function openVideoPlayer(customVideoId = null) {
+// Video Analytics State
+let videoPlayLogged = false;
+let milestonesReached = new Set();
+let lastPlayTime = null;
+
+function logWatchTime() {
+  if (lastPlayTime) {
+     const watchTime = Math.floor((Date.now() - lastPlayTime) / 1000);
+     if (watchTime > 0) {
+       incrementVideoWatchTime(activeAgencySlug, currentVideoType, watchTime);
+     }
+     lastPlayTime = null;
+  }
+}
+
+function openVideoPlayer(customVideoId = null, videoType = 'main') {
   // Stop background rain audio
   if (!bgAudio.paused) {
     bgAudio.pause();
@@ -344,6 +360,14 @@ function openVideoPlayer(customVideoId = null) {
   footerBar.style.pointerEvents = 'none';
   
   const targetId = customVideoId || MAIN_VIDEO_ID;
+  currentVideoType = videoType;
+  
+  // Reset Video Analytics State
+  videoPlayLogged = false;
+  milestonesReached.clear();
+  if (lastPlayTime) {
+    logWatchTime(); // Log any previous watch time if switching videos
+  }
   
   // If we are switching videos or haven't loaded yet
   if (currentVideoId !== targetId || !revealVideo.src) {
@@ -375,18 +399,19 @@ function openVideoPlayer(customVideoId = null) {
 
 playBtn.addEventListener('click', () => {
   logAgencyEvent(activeAgencySlug, 'playVideoClicks');
-  openVideoPlayer();
+  openVideoPlayer(MAIN_VIDEO_ID, 'main');
 });
 
 if (showReelBtn) {
 
   showReelBtn.addEventListener('click', () => {
     logAgencyEvent(activeAgencySlug, 'showReelClicks');
-    openVideoPlayer(REEL_VIDEO_ID);
+    openVideoPlayer(REEL_VIDEO_ID, 'reel');
   });
 }
 
 closeVideoBtn.addEventListener('click', () => {
+  logWatchTime();
   revealVideo.pause();
   revealVideo.currentTime = 0;
   videoContainer.classList.remove('active');
@@ -646,11 +671,22 @@ ctrlPlayPause.addEventListener('click', () => {
 revealVideo.addEventListener('play', () => {
   iconPlay.style.display = 'none';
   iconPause.style.display = 'block';
+  
+  if (!videoPlayLogged) {
+    logVideoEvent(activeAgencySlug, currentVideoType, 'start');
+    videoPlayLogged = true;
+  }
+  lastPlayTime = Date.now();
 });
 
 revealVideo.addEventListener('pause', () => {
   iconPlay.style.display = 'block';
   iconPause.style.display = 'none';
+  logWatchTime();
+});
+
+revealVideo.addEventListener('ended', () => {
+  logWatchTime();
 });
 
 // Rewind
@@ -686,6 +722,27 @@ revealVideo.addEventListener('timeupdate', () => {
     ctrlTimeline.value = revealVideo.currentTime;
   }
   timeCurrent.textContent = formatTime(revealVideo.currentTime);
+  
+  // Track milestones
+  if (revealVideo.duration) {
+    const pct = revealVideo.currentTime / revealVideo.duration;
+    if (pct >= 0.25 && !milestonesReached.has(25)) {
+      logVideoEvent(activeAgencySlug, currentVideoType, '25');
+      milestonesReached.add(25);
+    }
+    if (pct >= 0.50 && !milestonesReached.has(50)) {
+      logVideoEvent(activeAgencySlug, currentVideoType, '50');
+      milestonesReached.add(50);
+    }
+    if (pct >= 0.75 && !milestonesReached.has(75)) {
+      logVideoEvent(activeAgencySlug, currentVideoType, '75');
+      milestonesReached.add(75);
+    }
+    if (pct >= 0.99 && !milestonesReached.has(100)) {
+      logVideoEvent(activeAgencySlug, currentVideoType, '100');
+      milestonesReached.add(100);
+    }
+  }
 });
 
 ctrlTimeline.addEventListener('input', (e) => {

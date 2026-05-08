@@ -51,12 +51,12 @@
       display: none !important;
     }
     .agency-card {
-      padding: 1rem;
+      padding: 1.5rem;
       border: 1px solid #e0e0e0;
       margin-bottom: 1rem;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      align-items: stretch;
       background: #f4f4f4;
     }
     .analytics-grid {
@@ -75,7 +75,7 @@
       .analytics-grid {
         grid-template-columns: 1fr;
       }
-      .agency-card {
+      .agency-card-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
@@ -205,6 +205,33 @@
           <li>🏢 About Studio: <span id="global-click-about">0</span></li>
           <li>✉️ Contact Us: <span id="global-click-contact">0</span></li>
         </ul>
+        <h3 style="margin-bottom: 1rem; margin-top: 2rem; border-bottom: 1px solid #393939; padding-bottom: 0.5rem; font-size: 1.2rem; color: #ffffff;">Global Video Performance</h3>
+        
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+          <div style="flex: 1; min-width: 250px;">
+            <h4 style="font-size: 1rem; color: #f4f4f4; margin-bottom: 1rem;">Main Video</h4>
+            <div class="analytics-grid" style="grid-template-columns: 1fr 1fr;">
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">Actual Starts</div><div id="global-video-main-start" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">Watch Time</div><div id="global-video-main-time" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0s</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">25% Reached</div><div id="global-video-main-25" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">50% Reached</div><div id="global-video-main-50" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">75% Reached</div><div id="global-video-main-75" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">Completed</div><div id="global-video-main-100" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+            </div>
+          </div>
+          
+          <div style="flex: 1; min-width: 250px;">
+            <h4 style="font-size: 1rem; color: #f4f4f4; margin-bottom: 1rem;">Show Reel</h4>
+            <div class="analytics-grid" style="grid-template-columns: 1fr 1fr;">
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">Actual Starts</div><div id="global-video-reel-start" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">Watch Time</div><div id="global-video-reel-time" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0s</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">25% Reached</div><div id="global-video-reel-25" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">50% Reached</div><div id="global-video-reel-50" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">75% Reached</div><div id="global-video-reel-75" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+              <div><div style="font-size: 0.875rem; color: #a8a8a8;">Completed</div><div id="global-video-reel-100" style="font-size: 1.25rem; font-weight: bold; color: #ffffff;">0</div></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

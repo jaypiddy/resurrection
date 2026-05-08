@@ -77,3 +77,29 @@ export async function logAgencyPageView(slug) {
     console.warn("Error logging page view:", error);
   }
 }
+
+export async function logVideoEvent(slug, videoType, eventName) {
+  const { db } = await initFirebaseClient();
+  if (!db || !slug || !videoType) return;
+  try {
+    const docRef = doc(db, "agencies", slug);
+    await updateDoc(docRef, {
+      [`analytics.video.${videoType}.${eventName}`]: increment(1)
+    });
+  } catch (error) {
+    console.warn("Error logging video event:", error);
+  }
+}
+
+export async function incrementVideoWatchTime(slug, videoType, seconds) {
+  const { db } = await initFirebaseClient();
+  if (!db || !slug || !videoType) return;
+  try {
+    const docRef = doc(db, "agencies", slug);
+    await updateDoc(docRef, {
+      [`analytics.video.${videoType}.totalWatchTime`]: increment(seconds)
+    });
+  } catch (error) {
+    console.warn("Error incrementing video watch time:", error);
+  }
+}
