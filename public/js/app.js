@@ -724,18 +724,30 @@ const iconFullscreenExit = document.getElementById('icon-fullscreen-exit');
 const videoWrapper = document.getElementById('video-container');
 
 function toggleFullscreen() {
+  console.log("Fullscreen button clicked");
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    if (videoWrapper.requestFullscreen) {
-      videoWrapper.requestFullscreen().catch(err => console.log(err));
-    } else if (videoWrapper.webkitRequestFullscreen) { // Safari
-      videoWrapper.webkitRequestFullscreen().catch(err => console.log(err));
-    } else if (revealVideo.webkitEnterFullscreen) { // iOS Native Fallback
-      revealVideo.webkitEnterFullscreen();
+    try {
+      const targetElement = videoWrapper || document.documentElement;
+      if (targetElement.requestFullscreen) {
+        targetElement.requestFullscreen().catch(err => {
+          console.error("Fullscreen error:", err);
+          // Fallback to document.documentElement if videoWrapper failed
+          if (targetElement !== document.documentElement) {
+             document.documentElement.requestFullscreen().catch(e => console.error(e));
+          }
+        });
+      } else if (targetElement.webkitRequestFullscreen) {
+        targetElement.webkitRequestFullscreen();
+      } else if (revealVideo.webkitEnterFullscreen) {
+        revealVideo.webkitEnterFullscreen();
+      }
+    } catch(e) {
+      console.error(e);
     }
   } else {
     if (document.exitFullscreen) {
       document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) { // Safari
+    } else if (document.webkitExitFullscreen) {
       document.webkitExitFullscreen();
     }
   }
