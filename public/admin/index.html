@@ -165,7 +165,13 @@
 
     <!-- Agencies Tab -->
     <div id="tab-agencies">
-      <button id="show-create-btn" class="bx--btn bx--btn--primary" style="margin-bottom: 2rem;">Create New Agency</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <button id="show-create-btn" class="bx--btn bx--btn--primary">Create New Agency</button>
+        <div class="bx--form-item bx--checkbox-wrapper" style="display: flex; align-items: center;">
+          <input id="show-archived-checkbox" class="bx--checkbox" type="checkbox" value="show-archived">
+          <label for="show-archived-checkbox" class="bx--checkbox-label" style="margin-left: 0.5rem; cursor: pointer;">Show Archived</label>
+        </div>
+      </div>
       
       <div id="agencies-list">
         <!-- Agencies dynamically populated here -->
@@ -276,7 +282,10 @@
     </div>
     
     <div id="analytics-section" class="hidden" style="margin-top: 2rem; margin-bottom: 2rem; padding: 1.5rem; background: #262626; border-radius: 4px; border: 1px solid #393939;">
-      <h3 style="margin-bottom: 1rem; border-bottom: 1px solid #393939; padding-bottom: 0.5rem; font-size: 1.2rem;">Analytics Report</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #393939; padding-bottom: 0.5rem;">
+        <h3 style="font-size: 1.2rem; margin: 0; color: #ffffff;">Analytics Report</h3>
+        <button id="reset-analytics-btn" type="button" class="bx--btn bx--btn--danger bx--btn--sm">Reset Analytics</button>
+      </div>
       <div class="analytics-grid">
         <div>
           <div style="font-size: 0.875rem; color: #a8a8a8;">Total Page Views</div>
@@ -313,6 +322,6 @@
     &copy; 2026 <a href="https://www.powershifter.com/studio" target="_blank" rel="noopener noreferrer">Power // Shifter Studios</a> | Made by the good folks at <a href="https://www.powershifter.com" target="_blank" rel="noopener noreferrer">Power//Shifter Digital</a>
   </div>
 
-  <script type="module" src="admin.js?v=2"></script>
+  <script type="module" src="admin.js?v=3"></script>
 </body>
 </html>

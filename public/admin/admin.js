@@ -33,6 +33,8 @@ const cancelCreateBtn = document.getElementById('cancel-create-btn');
 const createError = document.getElementById('create-error');
 
 const formHeading = document.getElementById('form-heading');
+const showArchivedCheckbox = document.getElementById('show-archived-checkbox');
+const resetAnalyticsBtn = document.getElementById('reset-analytics-btn');
 
 // Analytics Elements
 const analyticsSection = document.getElementById('analytics-section');
@@ -273,43 +275,45 @@ tabBtnAnalytics.addEventListener('click', () => {
 showCreateBtn.addEventListener('click', showCreate);
 cancelCreateBtn.addEventListener('click', showDashboard);
 
-saveAgencyBtn.addEventListener('click', async () => {
-  const name = agencyNameInput.value.trim();
-  const slug = agencySlugInput.value.trim();
-  
-  createError.classList.add('hidden');
-  
-  if (!name || !slug) {
-    createError.textContent = "Name and Slug are required.";
-    createError.classList.remove('hidden');
-    return;
-  }
-  
-  const cfStreamDomainRaw = cfStreamDomainInput.value.trim();
-  const loaderVideoId = loaderVideoIdInput.value.trim();
-  let mainVideoId = mainVideoIdInput.value.trim();
-  const reelVideoId = reelVideoIdInput.value.trim();
-  
-  let cfStreamDomain = cfStreamDomainRaw;
-  if (cfStreamDomain.startsWith('http')) {
-    try {
-      const url = new URL(cfStreamDomain);
-      cfStreamDomain = url.hostname;
-      
-      // Attempt to extract video ID from the path e.g., /<video_id>/manifest/video.m3u8
-      const pathParts = url.pathname.split('/').filter(Boolean);
-      if (pathParts.length > 0 && !mainVideoId) {
-        mainVideoId = pathParts[0]; // First part of path is the video ID
-      }
-    } catch (e) {
-      // Ignore invalid URL, save as is
-    }
-  }
-
-  saveAgencyBtn.disabled = true;
-  cancelCreateBtn.disabled = true;
+saveAgencyBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
   
   try {
+    const name = agencyNameInput.value.trim();
+    const slug = agencySlugInput.value.trim();
+    
+    createError.classList.add('hidden');
+    
+    if (!name || !slug) {
+      createError.textContent = "Name and Slug are required.";
+      createError.classList.remove('hidden');
+      return;
+    }
+    
+    const cfStreamDomainRaw = cfStreamDomainInput.value.trim();
+    const loaderVideoId = loaderVideoIdInput.value.trim();
+    let mainVideoId = mainVideoIdInput.value.trim();
+    const reelVideoId = reelVideoIdInput.value.trim();
+    
+    let cfStreamDomain = cfStreamDomainRaw;
+    if (cfStreamDomain.startsWith('http')) {
+      try {
+        const url = new URL(cfStreamDomain);
+        cfStreamDomain = url.hostname;
+        
+        // Attempt to extract video ID from the path e.g., /<video_id>/manifest/video.m3u8
+        const pathParts = url.pathname.split('/').filter(Boolean);
+        if (pathParts.length > 0 && !mainVideoId) {
+          mainVideoId = pathParts[0]; // First part of path is the video ID
+        }
+      } catch (err) {
+        // Ignore invalid URL, save as is
+      }
+    }
+
+    saveAgencyBtn.disabled = true;
+    cancelCreateBtn.disabled = true;
+    
     const payload = {
       agencyName: name,
       cfStreamDomain: cfStreamDomain || null,
@@ -331,10 +335,37 @@ saveAgencyBtn.addEventListener('click', async () => {
     showDashboard();
   } catch (error) {
     console.error("Save Error:", error);
-    createError.textContent = error.message;
+    alert("SAVE ERROR: " + error.message);
+    createError.textContent = error.message || "An unexpected error occurred.";
     createError.classList.remove('hidden');
     saveAgencyBtn.disabled = false;
     cancelCreateBtn.disabled = false;
+  }
+});
+
+showArchivedCheckbox.addEventListener('change', loadAgencies);
+
+resetAnalyticsBtn.addEventListener('click', async () => {
+  if (!editingAgencyData) return;
+  if (confirm("Are you sure you want to reset all analytics for this agency?")) {
+    try {
+      await updateDoc(doc(db, "agencies", editingAgencyData.slug), {
+        analytics: {}
+      });
+      editingAgencyData.analytics = {};
+      statPageviews.textContent = '0';
+      statTotaltime.textContent = '0s';
+      statAvgtime.textContent = '0s';
+      statClickPlay.textContent = '0';
+      statClickReel.textContent = '0';
+      statClickSlop.textContent = '0';
+      statClickAbout.textContent = '0';
+      statClickContact.textContent = '0';
+      alert("Analytics reset successfully.");
+    } catch (err) {
+      console.error("Error resetting analytics:", err);
+      alert("Error resetting analytics: " + err.message);
+    }
   }
 });
 
@@ -363,6 +394,9 @@ async function loadAgencies() {
     
     let topAgencyName = "N/A";
     let highestViews = -1;
+    let renderedCount = 0;
+    
+    const showArchived = showArchivedCheckbox.checked;
     
     querySnapshot.forEach((docSnap) => {
       const data = docSnap.data();
@@ -406,6 +440,11 @@ async function loadAgencies() {
         }
       }
       
+      const isArchived = data.archived === true;
+      if (isArchived && !showArchived) {
+        return; // skip rendering
+      }
+      
       const div = document.createElement('div');
       div.className = 'agency-card';
       
@@ -418,49 +457,32 @@ async function loadAgencies() {
       const safeName = sanitizeHTML(data.agencyName);
       const safeSlug = sanitizeHTML(data.slug);
       
-      const vMain = (data.analytics && data.analytics.video && data.analytics.video.main) || {};
-      const vReel = (data.analytics && data.analytics.video && data.analytics.video.reel) || {};
-      
       div.innerHTML = `
-        <div class="agency-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid #e0e0e0; padding-bottom: 1rem; margin-bottom: 1rem;">
+        <div class="agency-card-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
           <div style="flex: 1 1 auto; min-width: 0; padding-right: 1rem;">
-            <h4 style="margin: 0; padding: 0; word-break: break-word;">${safeName}</h4>
+            <h4 style="margin: 0; padding: 0; word-break: break-word; font-size: 1.25rem; font-weight: normal;">${safeName}</h4>
             <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: #525252; word-break: break-all;">/${safeSlug}</p>
           </div>
-          <div style="display: flex; gap: 1rem; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end;">
-            <a href="/${safeSlug}" target="_blank" class="bx--btn bx--btn--sm bx--btn--ghost">View Site</a>
-            <button class="bx--btn bx--btn--sm bx--btn--secondary duplicate-btn" data-slug="${safeSlug}">Duplicate</button>
-            <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${safeSlug}">Edit</button>
-            <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${safeSlug}">Delete</button>
-          </div>
-        </div>
-        <div style="display: flex; gap: 2rem; flex-wrap: wrap; width: 100%;">
-          <div style="flex: 1; min-width: 200px;">
-            <h5 style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #161616;">Main Video Metrics</h5>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; font-size: 0.75rem; color: #525252;">
-              <div>Starts: <strong style="color:#161616;">${vMain.start || 0}</strong></div>
-              <div>Time: <strong style="color:#161616;">${formatTime(vMain.totalWatchTime || 0)}</strong></div>
-              <div>25%: <strong style="color:#161616;">${vMain['25'] || 0}</strong></div>
-              <div>50%: <strong style="color:#161616;">${vMain['50'] || 0}</strong></div>
-              <div>75%: <strong style="color:#161616;">${vMain['75'] || 0}</strong></div>
-              <div>100%: <strong style="color:#161616;">${vMain['100'] || 0}</strong></div>
-            </div>
-          </div>
-          <div style="flex: 1; min-width: 200px;">
-            <h5 style="margin: 0 0 0.5rem 0; font-size: 0.875rem; color: #161616;">Show Reel Metrics</h5>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; font-size: 0.75rem; color: #525252;">
-              <div>Starts: <strong style="color:#161616;">${vReel.start || 0}</strong></div>
-              <div>Time: <strong style="color:#161616;">${formatTime(vReel.totalWatchTime || 0)}</strong></div>
-              <div>25%: <strong style="color:#161616;">${vReel['25'] || 0}</strong></div>
-              <div>50%: <strong style="color:#161616;">${vReel['50'] || 0}</strong></div>
-              <div>75%: <strong style="color:#161616;">${vReel['75'] || 0}</strong></div>
-              <div>100%: <strong style="color:#161616;">${vReel['100'] || 0}</strong></div>
-            </div>
+          <div style="display: flex; gap: 0.5rem; flex: 0 0 auto; flex-wrap: wrap; align-items: center; justify-content: flex-end;">
+            <a href="/${safeSlug}" target="_blank" style="color: #0f62fe; text-decoration: none; margin-right: 1rem; font-size: 0.875rem;">View Site</a>
+            ${isArchived 
+              ? `<button class="bx--btn bx--btn--sm bx--btn--primary unarchive-btn" data-slug="${safeSlug}">Unarchive</button>
+                 <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${safeSlug}">Delete</button>`
+              : `<button class="bx--btn bx--btn--sm bx--btn--secondary duplicate-btn" data-slug="${safeSlug}">Duplicate</button>
+                 <button class="bx--btn bx--btn--sm bx--btn--tertiary edit-btn" data-slug="${safeSlug}">Edit</button>
+                 <button class="bx--btn bx--btn--sm bx--btn--ghost archive-btn" data-slug="${safeSlug}">Archive</button>
+                 <button class="bx--btn bx--btn--sm bx--btn--danger delete-btn" data-slug="${safeSlug}">Delete</button>`
+            }
           </div>
         </div>
       `;
       agenciesList.appendChild(div);
+      renderedCount++;
     });
+    
+    if (renderedCount === 0) {
+      noAgencies.classList.remove('hidden');
+    }
     
     // Populate Global Analytics UI
     globalPageviews.textContent = totalViews;
@@ -494,8 +516,9 @@ async function loadAgencies() {
     // Attach delete listeners
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', async (e) => {
+        e.preventDefault();
         if(confirm("Are you sure you want to delete this agency?")) {
-          const slug = e.target.dataset.slug;
+          const slug = e.currentTarget.dataset.slug;
           try {
             await deleteDoc(doc(db, "agencies", slug));
             loadAgencies();
@@ -512,7 +535,8 @@ async function loadAgencies() {
     
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const slug = e.target.dataset.slug;
+        e.preventDefault();
+        const slug = e.currentTarget.dataset.slug;
         const data = localAgenciesData[slug];
         if (data) showEdit(data);
       });
@@ -521,9 +545,37 @@ async function loadAgencies() {
     // Attach duplicate listeners
     document.querySelectorAll('.duplicate-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const slug = e.target.dataset.slug;
+        e.preventDefault();
+        const slug = e.currentTarget.dataset.slug;
         const data = localAgenciesData[slug];
         if (data) showDuplicate(data);
+      });
+    });
+    
+    // Attach archive/unarchive listeners
+    document.querySelectorAll('.archive-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const slug = e.currentTarget.dataset.slug;
+        try {
+          await updateDoc(doc(db, "agencies", slug), { archived: true });
+          loadAgencies();
+        } catch (error) {
+          alert("Error archiving: " + error.message);
+        }
+      });
+    });
+
+    document.querySelectorAll('.unarchive-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const slug = e.currentTarget.dataset.slug;
+        try {
+          await updateDoc(doc(db, "agencies", slug), { archived: false });
+          loadAgencies();
+        } catch (error) {
+          alert("Error unarchiving: " + error.message);
+        }
       });
     });
     

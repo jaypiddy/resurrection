@@ -8,7 +8,7 @@ let activeAgencySlug = null;
 let CF_STREAM_DOMAIN = 'customer-xv1aafyshr3tbknu.cloudflarestream.com'; 
 
 let LOADER_VIDEO_ID = '405467bd819441a2fbbc65e3b6ba268b'; // Crow_Loop
-let MAIN_VIDEO_ID = 'ab9e6e67d24333ba7432ed40a7be5ede';   // PSi Studios TO Campaign 3
+let MAIN_VIDEO_ID = '8f172c2a790d0334a062f315cdcab9cd';   // PSi Studios TO Campaign 3
 let REEL_VIDEO_ID = '5442fab995851e59c1c965023f4f28bc';   // PS_SIZZLE_NEW_MUSIC
 
 function loadCloudflareVideo(videoElement, videoId) {
@@ -457,7 +457,6 @@ function openTextModal(modalType) {
   
   if(textModalContainer) {
     textModalContainer.classList.add('active');
-    if (typeof lenis !== 'undefined') lenis.stop();
   }
 }
 
@@ -485,7 +484,6 @@ if (contactBtn) {
 if (closeTextModalBtn) {
   closeTextModalBtn.addEventListener('click', () => {
     textModalContainer.classList.remove('active');
-    if (typeof lenis !== 'undefined') lenis.start();
   });
 }
 
