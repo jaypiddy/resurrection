@@ -457,6 +457,8 @@ function openTextModal(modalType) {
   
   if(textModalContainer) {
     textModalContainer.classList.add('active');
+    if (typeof lenis !== 'undefined') lenis.stop();
+    document.body.style.overflow = 'hidden';
   }
 }
 
@@ -484,6 +486,8 @@ if (contactBtn) {
 if (closeTextModalBtn) {
   closeTextModalBtn.addEventListener('click', () => {
     textModalContainer.classList.remove('active');
+    if (typeof lenis !== 'undefined') lenis.start();
+    document.body.style.overflow = '';
   });
 }
 
