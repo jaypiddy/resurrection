@@ -441,23 +441,52 @@ const modalContentAbout = document.getElementById('modal-content-about');
 const modalContentSlop = document.getElementById('modal-content-slop');
 const modalContentContact = document.getElementById('modal-content-contact');
 
+// Lock the background page scroll while a modal is open so ONLY the modal's
+// own content scrolls. Three separate scroll systems have to be quieted:
+//   1. GSAP normalizeScroll — intercepts wheel/touch at the document level
+//      and ignores Lenis's data-lenis-prevent, so it MUST be disabled or the
+//      modal content can't scroll at all (this was the actual bug).
+//   2. Lenis smooth scroll — stopped so the page behind can't drift.
+//   3. body overflow:hidden — belt-and-suspenders against native scroll.
+function lockBackgroundScroll() {
+  if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.normalizeScroll(false);
+  if (typeof lenis !== 'undefined') lenis.stop();
+  document.body.style.overflow = 'hidden';
+}
+
+function unlockBackgroundScroll() {
+  if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.normalizeScroll(true);
+  if (typeof lenis !== 'undefined') lenis.start();
+  document.body.style.overflow = '';
+}
+
+function closeTextModal() {
+  if (textModalContainer) textModalContainer.classList.remove('active');
+  unlockBackgroundScroll();
+}
+
 function openTextModal(modalType) {
   // Hide both contents
   if(modalContentAbout) modalContentAbout.style.display = 'none';
   if(modalContentSlop) modalContentSlop.style.display = 'none';
   if(modalContentContact) modalContentContact.style.display = 'none';
-  
+
+  let activeContent = null;
   if (modalType === 'about' && modalContentAbout) {
-    modalContentAbout.style.display = 'block';
+    activeContent = modalContentAbout;
   } else if (modalType === 'slop' && modalContentSlop) {
-    modalContentSlop.style.display = 'block';
+    activeContent = modalContentSlop;
   } else if (modalType === 'contact' && modalContentContact) {
-    modalContentContact.style.display = 'block';
+    activeContent = modalContentContact;
   }
-  
+  if (activeContent) {
+    activeContent.style.display = 'block';
+    activeContent.scrollTop = 0; // always open scrolled to the top
+  }
+
   if(textModalContainer) {
     textModalContainer.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    lockBackgroundScroll();
   }
 }
 
@@ -483,11 +512,15 @@ if (contactBtn) {
 }
 
 if (closeTextModalBtn) {
-  closeTextModalBtn.addEventListener('click', () => {
-    textModalContainer.classList.remove('active');
-    document.body.style.overflow = '';
-  });
+  closeTextModalBtn.addEventListener('click', closeTextModal);
 }
+
+// Close on Escape as well, so the background scroll is never left locked.
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && textModalContainer && textModalContainer.classList.contains('active')) {
+    closeTextModal();
+  }
+});
 
 // --- 8. Background Audio Logic ---
 function toggleMute() {
@@ -750,10 +783,15 @@ ctrlTimeline.addEventListener('input', (e) => {
 });
 
 // Mute Toggle
-ctrlMute.addEventListener('click', () => {
-  revealVideo.muted = !revealVideo.muted;
-  updateVolumeUI();
-});
+// Guard: the #ctrl-mute button was removed from the markup, so ctrlMute is
+// null. Without this guard the null.addEventListener throws at load and kills
+// every line of script below it (volume slider, fullscreen, etc.).
+if (ctrlMute) {
+  ctrlMute.addEventListener('click', () => {
+    revealVideo.muted = !revealVideo.muted;
+    updateVolumeUI();
+  });
+}
 
 // Volume Slider
 ctrlVolume.addEventListener('input', (e) => {
