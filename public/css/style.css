@@ -693,6 +693,18 @@ body {
   color: var(--accent-color);
 }
 
+.modal-content a {
+  color: var(--accent-color);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  transition: opacity 0.3s ease;
+}
+
+.modal-content a:hover {
+  opacity: 0.7;
+}
+
 /* Contact Form */
 .contact-form {
   display: flex;
